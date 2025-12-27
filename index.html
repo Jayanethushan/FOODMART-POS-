@@ -8,6 +8,10 @@
     
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    
+    <!-- QR/Barcode Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://unpkg.com/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 
     <style>
         :root {
@@ -109,6 +113,21 @@
         .notification { position: fixed; top: 20px; right: 20px; background: var(--neon-green); color: black; padding: 12px 20px; border-radius: 10px; font-weight: 600; z-index: 3000; animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-in 2.7s forwards; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+        /* Scanner Modal Styles */
+        .scanner-modal { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 20px; border-radius: 20px; width: 90%; max-width: 500px; text-align: center; }
+        #scanner-container { width: 100%; height: 300px; margin: 20px 0; background: rgba(0,0,0,0.3); border-radius: 10px; overflow: hidden; position: relative; }
+        #scanner-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .scanner-icon { font-size: 50px; margin-bottom: 10px; color: var(--neon-blue); }
+        .scanner-btn { background: var(--neon-blue); color: black; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; margin: 10px 5px; }
+
+        /* Edit Price Styles */
+        .price-edit-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 12px; margin-left: 5px; }
+        .price-edit-btn:hover { color: var(--neon-blue); }
+        .price-edit-input { width: 80px; padding: 5px; border-radius: 5px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); color: white; text-align: center; }
+
+        /* Lock/Unlock Button */
+        #lockBtn { display: flex; align-items: center; gap: 5px; }
     </style>
 </head>
 <body>
@@ -131,11 +150,17 @@
 <div id="view-pos" style="display: contents;">
     <main>
         <div class="left-col">
-            <input type="text" id="pSearch" class="search-bar" placeholder="🔍 Search items..." oninput="renderItems()">
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <input type="text" id="pSearch" class="search-bar" placeholder="🔍 Search items..." oninput="renderItems()" style="flex: 1;">
+                <button class="nav-link" onclick="showScanner('pos')" style="min-width: 50px; padding: 12px; display: flex; align-items: center; justify-content: center;">📷</button>
+            </div>
             <div class="item-grid" id="itemGrid"></div>
         </div>
         <div class="right-col glass">
-            <div style="padding: 15px; border-bottom: 1px solid var(--glass-border); font-weight: 800;">BILLING</div>
+            <div style="padding: 15px; border-bottom: 1px solid var(--glass-border); font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
+                <span>BILLING</span>
+                <button class="nav-link" onclick="showScanner('bill')" style="padding: 5px 10px; font-size: 11px;">📷 Scan Item</button>
+            </div>
             <div class="cart-table" id="cartList"></div>
             
             <div style="padding: 10px 15px; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--glass-border);">
@@ -171,7 +196,10 @@
     <div style="max-width: 1000px; margin: auto;">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
             <div class="glass" style="padding: 20px;">
-                <div style="font-weight: 800; margin-bottom: 20px;">STOCK UPDATE</div>
+                <div style="font-weight: 800; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <span>STOCK UPDATE</span>
+                    <button class="nav-link" onclick="showScanner('stock')" style="padding: 5px 10px; font-size: 11px;">📷 Scan Code</button>
+                </div>
                 <select id="stType" onchange="toggleStockMode()">
                     <option value="in">ADD NEW / REFILL (ස්ටොක් ඇතුලත් කිරීම)</option>
                     <option value="out">WASTAGE / DAMAGE (කුණු වූ/පාඩු ඉවත් කිරීම)</option>
@@ -182,6 +210,7 @@
                     <input type="number" id="stCost" placeholder="Cost Price (1kg)" class="search-bar">
                     <input type="number" id="stPrice" placeholder="Selling Price (1kg)" class="search-bar">
                     <input type="text" id="stEmoji" placeholder="Emoji (🍎)" class="search-bar">
+                    <input type="text" id="stBarcode" placeholder="Barcode/QR Code (optional)" class="search-bar">
                 </div>
                 <div id="existingProductForm" style="display:none;">
                     <select id="stSelect" class="search-bar"></select>
@@ -225,6 +254,7 @@
     </div>
 </div>
 
+<!-- Existing Modals -->
 <div class="modal" id="pinModal">
     <div class="glass-popup">
         <div class="popup-title">ENTER PIN</div>
@@ -265,20 +295,55 @@
     </div>
 </div>
 
+<!-- New Scanner Modal -->
+<div class="modal" id="scannerModal">
+    <div class="scanner-modal">
+        <div class="popup-title">SCAN QR/ BARCODE</div>
+        <div class="popup-sub">Point your camera at the QR code or barcode</div>
+        <div id="scanner-container">
+            <div id="scanner-placeholder">
+                <div class="scanner-icon">📷</div>
+                <div>Camera scanner will appear here</div>
+            </div>
+        </div>
+        <div style="margin-top: 20px;">
+            <button class="scanner-btn" onclick="startScanner()">Start Scanner</button>
+            <button class="btn-cancel" onclick="stopScanner()">Stop Scanner</button>
+            <button class="btn-cancel" onclick="closeModal('scannerModal')">Close</button>
+        </div>
+        <div id="scanner-result" style="margin-top: 20px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 10px; display: none;">
+            <div id="scanned-text"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Price Modal -->
+<div class="modal" id="editPriceModal">
+    <div class="glass-popup">
+        <div class="popup-title" id="editItemName">Edit Price</div>
+        <div class="popup-sub">Enter new selling price</div>
+        <input type="number" id="editPriceInput" class="popup-input" placeholder="0.00" step="0.01">
+        <div class="popup-btn-grid">
+            <button class="btn-action btn-cancel" onclick="closeModal('editPriceModal')">CANCEL</button>
+            <button class="btn-action btn-pay" onclick="savePriceEdit()">SAVE</button>
+        </div>
+    </div>
+</div>
+
 <script>
     // -------------------------------------------------------------------------
-    // FIREBASE සැකසුම් (ඔබේ Firebase තොරතුරු මෙහි ඇතුළත් කරන්න)
+    // FIREBASE සැකසුම්
     // -------------------------------------------------------------------------
     const firebaseConfig = {
-  apiKey: "AIzaSyAdw73seKGjO0VLFZuMj9gJaiSmnpc3N0M",
-  authDomain: "pos-system-dc0e0.firebaseapp.com",
-  databaseURL: "https://pos-system-dc0e0-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "pos-system-dc0e0",
-  storageBucket: "pos-system-dc0e0.firebasestorage.app",
-  messagingSenderId: "251115370846",
-  appId: "1:251115370846:web:f7cfe5b3f38f71d67077cf",
-  measurementId: "G-CGRK6HPBLX"
-};
+        apiKey: "AIzaSyAdw73seKGjO0VLFZuMj9gJaiSmnpc3N0M",
+        authDomain: "pos-system-dc0e0.firebaseapp.com",
+        databaseURL: "https://pos-system-dc0e0-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "pos-system-dc0e0",
+        storageBucket: "pos-system-dc0e0.firebasestorage.app",
+        messagingSenderId: "251115370846",
+        appId: "1:251115370846:web:f7cfe5b3f38f71d67077cf",
+        measurementId: "G-CGRK6HPBLX"
+    };
 
     // Firebase ආරම්භ කිරීම
     firebase.initializeApp(firebaseConfig);
@@ -294,6 +359,9 @@
     let currentDiscount = 0;
     let isLocked = true;
     let tempItem = null;
+    let scanner = null;
+    let currentScannerMode = 'pos'; // 'pos', 'bill', or 'stock'
+    let itemToEdit = null;
     
     // Device sync key for multi-device support
     const SYNC_KEY = 'jmart_sync_id';
@@ -329,7 +397,7 @@
         }
     });
 
-    // Save function with Cloud Support (මුල් එකට අමතරව Firebase එකටද Save කරයි)
+    // Save function with Cloud Support
     function save() {
         localStorage.setItem('jmart_last_update_source', syncId);
         localStorage.setItem('jmart_db', JSON.stringify(db));
@@ -405,10 +473,49 @@
         db.filter(i => i.name.toLowerCase().includes(query)).forEach(item => {
             const card = document.createElement('div');
             card.className = 'item-card glass';
-            card.innerHTML = `<span class="stock-badge">${parseFloat(item.qty).toFixed(2)}kg</span><div style="font-size:30px;">${item.emoji}</div><b>${item.name}</b><br><small>Rs ${item.price}</small>`;
+            card.innerHTML = `
+                <span class="stock-badge">${parseFloat(item.qty).toFixed(2)}kg</span>
+                <div style="font-size:30px;">${item.emoji || '🍎'}</div>
+                <b>${item.name}</b>
+                <br>
+                <small>
+                    Rs ${item.price}
+                    <button class="price-edit-btn" onclick="editItemPrice('${item.name}')" title="Edit price">✏️</button>
+                </small>
+                ${item.barcode ? `<br><small style="font-size:9px;color:var(--text-dim)">${item.barcode}</small>` : ''}
+            `;
             card.onclick = () => addToCart(item);
             grid.appendChild(card);
         });
+    }
+
+    // Price editing functionality
+    function editItemPrice(itemName) {
+        const item = db.find(i => i.name === itemName);
+        if (!item) return;
+        
+        itemToEdit = item;
+        document.getElementById('editItemName').innerText = `Edit Price - ${item.name}`;
+        document.getElementById('editPriceInput').value = item.price;
+        document.getElementById('editPriceModal').style.display = 'flex';
+        document.getElementById('editPriceInput').focus();
+    }
+
+    function savePriceEdit() {
+        if (!itemToEdit) return;
+        
+        const newPrice = parseFloat(document.getElementById('editPriceInput').value);
+        if (isNaN(newPrice) || newPrice <= 0) {
+            alert("Please enter a valid price");
+            return;
+        }
+        
+        itemToEdit.price = newPrice;
+        save();
+        renderItems();
+        closeModal('editPriceModal');
+        showNotification(`Price updated for ${itemToEdit.name}`, 'success');
+        itemToEdit = null;
     }
 
     // --- Enhanced Popups Logic ---
@@ -469,6 +576,9 @@
 
     function closeModal(id) {
         document.getElementById(id).style.display = 'none';
+        if (id === 'scannerModal') {
+            stopScanner();
+        }
     }
 
     // Discount Functions
@@ -508,11 +618,17 @@
         list.innerHTML = '';
         
         if (cart.length === 0) {
-            list.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-dim);">Cart is empty<br><small>Add items from the left</small></div>';
+            list.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-dim);">Cart is empty<br><small>Add items from the left or scan items</small></div>';
         } else {
             cart.forEach((item, i) => {
                 subtotal += item.rowTotal;
-                list.innerHTML += `<div class="cart-row"><span>${item.name}</span><span>${item.weight.toFixed(3)}kg</span><span></span><span>${item.rowTotal.toFixed(2)}</span><span onclick="removeCartItem(${i})" style="color:var(--danger);cursor:pointer;">✕</span></div>`;
+                list.innerHTML += `<div class="cart-row">
+                    <span>${item.name}</span>
+                    <span>${item.weight.toFixed(3)}kg</span>
+                    <span>Rs ${item.price}</span>
+                    <span>${item.rowTotal.toFixed(2)}</span>
+                    <span onclick="removeCartItem(${i})" style="color:var(--danger);cursor:pointer;">✕</span>
+                </div>`;
             });
         }
         
@@ -610,6 +726,7 @@
         document.getElementById('stCost').value = "";
         document.getElementById('stPrice').value = "";
         document.getElementById('stEmoji').value = "";
+        document.getElementById('stBarcode').value = "";
         document.getElementById('stQty').value = "";
     }
 
@@ -632,6 +749,7 @@
             let cost = parseFloat(document.getElementById('stCost').value);
             let price = parseFloat(document.getElementById('stPrice').value);
             let emoji = document.getElementById('stEmoji').value || '🍎';
+            let barcode = document.getElementById('stBarcode').value.trim();
             
             if(!name) {
                 alert("අයිතමයේ නම ඇතුලත් කරන්න");
@@ -641,6 +759,9 @@
             let existing = db.find(i => i.name.toLowerCase() === name.toLowerCase());
             if(existing) { 
                 existing.qty = (parseFloat(existing.qty) + qty).toFixed(3);
+                if (barcode && !existing.barcode) {
+                    existing.barcode = barcode;
+                }
                 addLog(`තොග අලුත් කරන ලදී: ${name} (+${qty}kg)`, 'stock');
                 showNotification(`${name} stock increased by ${qty}kg`, 'success');
             } else {
@@ -654,6 +775,7 @@
                     price: price, 
                     qty, 
                     emoji: emoji,
+                    barcode: barcode || null,
                     category: document.getElementById('stCat').value
                 }); 
                 addLog(`අලුත් අයිතමයක් එක් කරන ලදී: ${name}`, 'stock');
@@ -772,6 +894,157 @@
         }
     }
 
+    // =============================================
+    // QR/BARCODE SCANNER FUNCTIONS
+    // =============================================
+    function showScanner(mode) {
+        currentScannerMode = mode;
+        document.getElementById('scannerModal').style.display = 'flex';
+        document.getElementById('scanner-result').style.display = 'none';
+    }
+
+    function startScanner() {
+        const scannerContainer = document.getElementById('scanner-container');
+        scannerContainer.innerHTML = '';
+        
+        // Create scanner element
+        const scannerElement = document.createElement('div');
+        scannerElement.id = 'qr-reader';
+        scannerElement.style.width = '100%';
+        scannerElement.style.height = '100%';
+        scannerContainer.appendChild(scannerElement);
+        
+        // Initialize scanner
+        scanner = new Html5Qrcode("qr-reader");
+        
+        const config = { 
+            fps: 10, 
+            qrbox: { width: 250, height: 250 },
+            supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
+            facingMode: "environment"
+        };
+        
+        scanner.start(
+            { facingMode: "environment" },
+            config,
+            onScanSuccess,
+            onScanError
+        ).catch(err => {
+            console.error("Scanner error:", err);
+            alert("Unable to start camera. Please check permissions.");
+        });
+    }
+
+    function stopScanner() {
+        if (scanner) {
+            scanner.stop().then(() => {
+                scanner = null;
+                const scannerContainer = document.getElementById('scanner-container');
+                scannerContainer.innerHTML = `
+                    <div id="scanner-placeholder">
+                        <div class="scanner-icon">📷</div>
+                        <div>Camera scanner stopped</div>
+                    </div>
+                `;
+            }).catch(err => {
+                console.error("Error stopping scanner:", err);
+            });
+        }
+    }
+
+    function onScanSuccess(decodedText, decodedResult) {
+        console.log(`Scan result: ${decodedText}`, decodedResult);
+        
+        // Display scanned result
+        document.getElementById('scanned-text').innerHTML = `
+            <strong>Scanned:</strong> ${decodedText}<br>
+            <small>${new Date().toLocaleTimeString()}</small>
+        `;
+        document.getElementById('scanner-result').style.display = 'block';
+        
+        // Process based on scanner mode
+        processScannedCode(decodedText);
+        
+        // Stop scanner after successful scan
+        setTimeout(() => {
+            if (scanner) {
+                stopScanner();
+            }
+        }, 1000);
+    }
+
+    function onScanError(errorMessage) {
+        // Don't show errors to user unless it's critical
+        console.log(`Scan error: ${errorMessage}`);
+    }
+
+    function processScannedCode(code) {
+        // Clean the code
+        code = code.trim();
+        
+        // Try to find item by barcode
+        let item = db.find(i => i.barcode === code);
+        
+        // If not found by barcode, try to find by name
+        if (!item) {
+            item = db.find(i => i.name.toLowerCase().includes(code.toLowerCase()));
+        }
+        
+        if (item) {
+            // Item found
+            switch(currentScannerMode) {
+                case 'pos':
+                    // Add to cart from POS view
+                    addToCart(item);
+                    closeModal('scannerModal');
+                    break;
+                    
+                case 'bill':
+                    // Add to cart from billing view
+                    addToCart(item);
+                    closeModal('scannerModal');
+                    break;
+                    
+                case 'stock':
+                    // Pre-fill stock form
+                    document.getElementById('stName').value = item.name;
+                    document.getElementById('stCost').value = item.cost;
+                    document.getElementById('stPrice').value = item.price;
+                    document.getElementById('stEmoji').value = item.emoji || '🍎';
+                    document.getElementById('stBarcode').value = item.barcode || '';
+                    document.getElementById('stCat').value = item.category || 'Fruit';
+                    closeModal('scannerModal');
+                    showNotification(`Item ${item.name} loaded`, 'success');
+                    break;
+            }
+        } else {
+            // Item not found
+            switch(currentScannerMode) {
+                case 'pos':
+                case 'bill':
+                    alert("Item not found in database. Please add it first in Stock Control.");
+                    // Optionally switch to stock tab
+                    switchTab('stock');
+                    break;
+                    
+                case 'stock':
+                    // For new items, just fill the barcode field
+                    document.getElementById('stBarcode').value = code;
+                    showNotification(`Barcode ${code} saved. Fill other details.`, 'info');
+                    break;
+            }
+        }
+    }
+
+    // Generate barcode for items
+    function generateBarcode(itemName) {
+        // Simple barcode generation using item name hash
+        const hash = Array.from(itemName).reduce((acc, char) => {
+            return ((acc << 5) - acc) + char.charCodeAt(0);
+        }, 0);
+        return 'JM' + Math.abs(hash).toString().substring(0, 8);
+    }
+
     // Initialize on load
     window.onload = () => { 
         renderItems(); 
@@ -779,11 +1052,28 @@
         renderLogs();
         updateCartUI();
         
+        // Generate barcodes for existing items if not present
+        let needsSave = false;
+        db.forEach(item => {
+            if (!item.barcode) {
+                item.barcode = generateBarcode(item.name);
+                needsSave = true;
+            }
+        });
+        if (needsSave) save();
+        
         // Show welcome message
         setTimeout(() => {
             showNotification('Jayaneth Pro Mart POS Ready');
         }, 1000);
     };
+
+    // Handle beforeunload to clean up scanner
+    window.addEventListener('beforeunload', () => {
+        if (scanner) {
+            stopScanner();
+        }
+    });
 </script>
 </body>
 </html>
