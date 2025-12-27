@@ -239,9 +239,34 @@
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
         
-        /* Hide MacBook Pro and other system info */
-        .system-info {
-            display: none !important;
+        /* Auto-fill animation */
+        .auto-fill-animation {
+            animation: autoFill 0.5s ease-out;
+        }
+        @keyframes autoFill {
+            0% { background: rgba(138, 255, 103, 0); }
+            50% { background: rgba(138, 255, 103, 0.3); }
+            100% { background: rgba(138, 255, 103, 0); }
+        }
+        
+        /* Scan success notification */
+        .scan-success {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--neon-green);
+            color: black;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 600;
+            z-index: 100;
+            animation: pulse 1s ease-in-out;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
@@ -1164,12 +1189,22 @@
     }
 
     // =============================================
-    // QR/BARCODE SCANNER FUNCTIONS
+    // QR/BARCODE SCANNER FUNCTIONS - FIXED
     // =============================================
     function showScanner(mode) {
         currentScannerMode = mode;
         document.getElementById('scannerModal').style.display = 'flex';
         document.getElementById('scanner-result').style.display = 'none';
+        document.getElementById('scanned-text').innerHTML = '';
+        
+        // Clear scanner container
+        const scannerContainer = document.getElementById('scanner-container');
+        scannerContainer.innerHTML = `
+            <div id="scanner-placeholder">
+                <div class="scanner-icon">📷</div>
+                <div>Click "Start Scanner" to begin</div>
+            </div>
+        `;
     }
 
     function startScanner() {
@@ -1183,30 +1218,46 @@
         scannerElement.style.height = '100%';
         scannerContainer.appendChild(scannerElement);
         
-        // Initialize scanner
-        scanner = new Html5Qrcode("qr-reader");
-        
-        const config = { 
-            fps: 10, 
-            qrbox: { width: 250, height: 250 },
-            supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
-            facingMode: "environment"
-        };
-        
-        scanner.start(
-            { facingMode: "environment" },
-            config,
-            onScanSuccess,
-            onScanError
-        ).catch(err => {
-            console.error("Scanner error:", err);
-            alert("Unable to start camera. Please check permissions.");
-        });
+        try {
+            // Initialize scanner
+            scanner = new Html5Qrcode("qr-reader");
+            
+            const config = { 
+                fps: 10, 
+                qrbox: { width: 250, height: 250 },
+                supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
+                facingMode: "environment"
+            };
+            
+            scanner.start(
+                { facingMode: "environment" },
+                config,
+                onScanSuccess,
+                onScanError
+            ).then(() => {
+                console.log("Scanner started successfully");
+                showNotification("Scanner started", "success");
+            }).catch(err => {
+                console.error("Scanner start error:", err);
+                alert("Unable to start camera. Please check permissions.");
+                // Restore placeholder
+                scannerContainer.innerHTML = `
+                    <div id="scanner-placeholder">
+                        <div class="scanner-icon">📷</div>
+                        <div>Camera access required</div>
+                    </div>
+                `;
+            });
+        } catch (error) {
+            console.error("Scanner initialization error:", error);
+            alert("Error initializing scanner. Please refresh the page.");
+        }
     }
 
     function stopScanner() {
-        if (scanner) {
+        if (scanner && scanner.isScanning) {
             scanner.stop().then(() => {
+                console.log("Scanner stopped");
                 scanner = null;
                 const scannerContainer = document.getElementById('scanner-container');
                 scannerContainer.innerHTML = `
@@ -1224,27 +1275,31 @@
     function onScanSuccess(decodedText, decodedResult) {
         console.log(`Scan result: ${decodedText}`, decodedResult);
         
-        // Display scanned result
-        document.getElementById('scanned-text').innerHTML = `
-            <strong>Scanned:</strong> ${decodedText}<br>
-            <small>${new Date().toLocaleTimeString()}</small>
+        // Display scanned result with visual feedback
+        const resultDiv = document.getElementById('scanner-result');
+        resultDiv.innerHTML = `
+            <div style="color: var(--neon-green); font-weight: 600;">✓ SCAN SUCCESSFUL</div>
+            <div style="margin-top: 5px;"><strong>Scanned Code:</strong> ${decodedText}</div>
+            <div style="font-size: 11px; color: var(--text-dim);">${new Date().toLocaleTimeString()}</div>
         `;
-        document.getElementById('scanner-result').style.display = 'block';
+        resultDiv.style.display = 'block';
+        resultDiv.style.background = 'rgba(138, 255, 103, 0.1)';
+        resultDiv.style.border = '1px solid var(--neon-green)';
         
         // Process based on scanner mode
         processScannedCode(decodedText);
         
-        // Stop scanner after successful scan
+        // Stop scanner after successful scan (but keep it visible for feedback)
         setTimeout(() => {
             if (scanner) {
                 stopScanner();
             }
-        }, 1000);
+        }, 1500);
     }
 
     function onScanError(errorMessage) {
-        // Don't show errors to user unless it's critical
         console.log(`Scan error: ${errorMessage}`);
+        // Don't show errors to user unless it's critical
     }
 
     function processScannedCode(code) {
@@ -1264,45 +1319,96 @@
             switch(currentScannerMode) {
                 case 'pos':
                     // Add to cart from POS view
-                    addToCart(item);
-                    closeModal('scannerModal');
+                    setTimeout(() => {
+                        closeModal('scannerModal');
+                        addToCart(item);
+                    }, 500);
                     break;
                     
                 case 'bill':
                     // Add to cart from billing view
-                    addToCart(item);
-                    closeModal('scannerModal');
+                    setTimeout(() => {
+                        closeModal('scannerModal');
+                        addToCart(item);
+                    }, 500);
                     break;
                     
                 case 'stock':
-                    // Pre-fill stock form
-                    document.getElementById('stName').value = item.name;
-                    document.getElementById('stCost').value = item.cost;
-                    document.getElementById('stPrice').value = item.price;
-                    document.getElementById('stEmoji').value = item.emoji || '🍎';
-                    document.getElementById('stBarcode').value = item.barcode || '';
-                    document.getElementById('stCat').value = item.category || 'Fruit';
-                    closeModal('scannerModal');
-                    showNotification(`Item ${item.name} loaded`, 'success');
+                    // Pre-fill stock form with animation
+                    setTimeout(() => {
+                        closeModal('scannerModal');
+                        autoFillStockForm(item);
+                    }, 500);
                     break;
             }
         } else {
-            // Item not found
+            // Item not found - handle based on mode
             switch(currentScannerMode) {
                 case 'pos':
                 case 'bill':
-                    alert("Item not found in database. Please add it first in Stock Control.");
-                    // Optionally switch to stock tab
-                    switchTab('stock');
+                    setTimeout(() => {
+                        const resultDiv = document.getElementById('scanner-result');
+                        resultDiv.innerHTML = `
+                            <div style="color: var(--danger); font-weight: 600;">✗ ITEM NOT FOUND</div>
+                            <div style="margin-top: 5px;"><strong>Code:</strong> ${code}</div>
+                            <div style="font-size: 11px; color: var(--text-dim);">Add item in Stock Control first</div>
+                        `;
+                        resultDiv.style.background = 'rgba(255, 71, 71, 0.1)';
+                        resultDiv.style.border = '1px solid var(--danger)';
+                    }, 300);
                     break;
                     
                 case 'stock':
                     // For new items, just fill the barcode field
-                    document.getElementById('stBarcode').value = code;
-                    showNotification(`Barcode ${code} saved. Fill other details.`, 'info');
+                    setTimeout(() => {
+                        closeModal('scannerModal');
+                        document.getElementById('stBarcode').value = code;
+                        document.getElementById('stBarcode').classList.add('auto-fill-animation');
+                        showNotification(`Barcode ${code} saved. Fill other details.`, 'info');
+                        
+                        // Remove animation class after animation completes
+                        setTimeout(() => {
+                            document.getElementById('stBarcode').classList.remove('auto-fill-animation');
+                        }, 500);
+                    }, 500);
                     break;
             }
         }
+    }
+
+    function autoFillStockForm(item) {
+        // Animate each field as it's filled
+        const fields = [
+            { id: 'stName', value: item.name },
+            { id: 'stCost', value: item.cost },
+            { id: 'stPrice', value: item.price },
+            { id: 'stEmoji', value: item.emoji || '🍎' },
+            { id: 'stBarcode', value: item.barcode || '' },
+            { id: 'stCat', value: item.category || 'Fruit' }
+        ];
+        
+        // Set category first (special handling for select)
+        document.getElementById('stCat').value = item.category || 'Fruit';
+        
+        // Fill other fields with animation
+        fields.forEach((field, index) => {
+            if (field.id !== 'stCat') {
+                setTimeout(() => {
+                    const element = document.getElementById(field.id);
+                    if (element) {
+                        element.value = field.value;
+                        element.classList.add('auto-fill-animation');
+                        
+                        // Remove animation class after animation completes
+                        setTimeout(() => {
+                            element.classList.remove('auto-fill-animation');
+                        }, 500);
+                    }
+                }, index * 100);
+            }
+        });
+        
+        showNotification(`${item.name} loaded for stock update`, 'success');
     }
 
     // Generate barcode for items
