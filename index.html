@@ -2577,6 +2577,21 @@
             resizeGameCanvas();
         }
     });
+    /* Responsive Design */
+@media (max-width: 1024px) {
+    main { flex-direction: column; overflow-y: auto; }
+    .left-col, .right-col { flex: none; width: 100%; }
+    .item-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+}
+
+@media (max-width: 600px) {
+    header { flex-direction: column; gap: 10px; padding: 10px; }
+    nav { overflow-x: auto; white-space: nowrap; padding: 10px; }
+    .dashboard-stats { width: 100%; justify-content: space-between; }
+    .mini-stat { min-width: 80px; padding: 5px; }
+    .item-card { padding: 10px 5px; }
+    .logo h1 { font-size: 18px; }
+}
 </script>
 </body>
 </html>
