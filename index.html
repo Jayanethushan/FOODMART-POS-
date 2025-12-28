@@ -249,24 +249,204 @@
             100% { background: rgba(138, 255, 103, 0); }
         }
         
-        /* Scan success notification */
-        .scan-success {
+        /* Sold out badge */
+        .sold-out-badge {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background: var(--neon-green);
-            color: black;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 11px;
+            top: 8px;
+            left: 8px;
+            font-size: 9px;
+            background: rgba(255, 71, 71, 0.8);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
             font-weight: 600;
-            z-index: 100;
-            animation: pulse 1s ease-in-out;
         }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+        
+        /* New item option in select */
+        .new-item-option {
+            color: var(--neon-green) !important;
+            font-weight: 600 !important;
+        }
+        
+        /* Game Styles */
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: rgba(0,0,0,0.2);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .game-canvas-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #gameCanvas {
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 10, 15, 0.8);
+            display: block;
+        }
+        
+        .game-controls {
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .game-stats {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .game-stat {
+            background: rgba(255,255,255,0.05);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            min-width: 80px;
+        }
+        
+        .game-stat-value {
+            font-family: 'JetBrains Mono';
+            font-size: 16px;
+            color: var(--neon-green);
+            display: block;
+        }
+        
+        .game-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .game-btn {
+            background: var(--neon-blue);
+            color: black;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: 0.3s;
+        }
+        
+        .game-btn:hover {
+            background: var(--neon-green);
+            transform: scale(1.05);
+        }
+        
+        .game-btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .game-leaderboard {
+            margin-top: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .leaderboard-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--neon-blue);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 11px;
+        }
+        
+        .leaderboard-rank {
+            width: 25px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--neon-green);
+        }
+        
+        .leaderboard-name {
+            flex: 1;
+            padding: 0 10px;
+        }
+        
+        .leaderboard-score {
+            font-family: 'JetBrains Mono';
+            color: var(--neon-blue);
+        }
+        
+        .player-highlight {
+            background: rgba(138, 255, 103, 0.1);
+            border-radius: 5px;
+            padding: 5px;
+        }
+        
+        .game-over-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .game-over-title {
+            font-size: 32px;
+            color: var(--danger);
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+        
+        .game-over-score {
+            font-size: 24px;
+            color: var(--neon-green);
+            margin-bottom: 20px;
+            font-family: 'JetBrains Mono';
+        }
+        
+        .game-instructions {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+        
+        .game-instructions h4 {
+            margin: 0 0 8px 0;
+            color: var(--neon-blue);
+        }
+        
+        .game-instructions ul {
+            margin: 0;
+            padding-left: 15px;
+        }
+        
+        .game-instructions li {
+            margin-bottom: 5px;
         }
     </style>
 </head>
@@ -285,6 +465,7 @@
     <button class="nav-link active" id="tab-pos" onclick="switchTab('pos')">POS</button>
     <button class="nav-link" id="tab-stock" onclick="switchTab('stock')">STOCK CONTROL</button>
     <button class="nav-link" id="tab-reports" onclick="switchTab('reports')">P&L REPORTS</button>
+    <button class="nav-link" id="tab-game" onclick="switchTab('game')">🎮 FRUIT CATCH</button>
 </nav>
 
 <div id="view-pos" style="display: contents;">
@@ -345,7 +526,13 @@
                     <option value="out">WASTAGE / DAMAGE (කුණු වූ/පාඩු ඉවත් කිරීම)</option>
                 </select>
                 <div id="newProductForm">
-                    <input type="text" id="stName" placeholder="Item Name" class="search-bar">
+                    <div style="margin-bottom: 10px;">
+                        <select id="stSelectName" class="search-bar" onchange="handleItemSelect()">
+                            <option value="">-- Select existing item or add new --</option>
+                            <!-- Items will be populated here -->
+                        </select>
+                    </div>
+                    <input type="text" id="stName" placeholder="Item Name (if new)" class="search-bar">
                     <select id="stCat" class="search-bar"><option value="Fruit">Fruit</option><option value="Veg">Vegetable</option></select>
                     <input type="number" id="stCost" placeholder="Cost Price (1kg)" class="search-bar">
                     <input type="number" id="stPrice" placeholder="Selling Price (1kg)" class="search-bar">
@@ -358,7 +545,7 @@
                 <input type="number" id="stQty" placeholder="Weight (kg)" class="search-bar">
                 <button class="btn-action btn-pay" onclick="processStock()">UPDATE INVENTORY</button>
                 <div style="font-size: 11px; color: var(--text-dim); margin-top: 10px; text-align: center;">
-                    Note: All fields will clear after adding
+                    Note: Fields will clear after adding
                 </div>
             </div>
             <div class="glass" style="padding: 20px;">
@@ -390,6 +577,69 @@
         <div class="glass" style="padding: 20px;">
             <h3>Today's Summary</h3>
             <div id="summaryText"></div>
+        </div>
+    </div>
+</div>
+
+<!-- New Game Tab -->
+<div id="view-game" style="display: none; padding: 20px; overflow: hidden;">
+    <div class="game-container glass">
+        <div class="game-canvas-container">
+            <canvas id="gameCanvas"></canvas>
+            <div id="gameOverScreen" class="game-over-screen" style="display: none;">
+                <div class="game-over-title">GAME OVER!</div>
+                <div class="game-over-score">Score: <span id="finalScore">0</span></div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="game-btn" onclick="restartGame()">PLAY AGAIN</button>
+                    <button class="game-btn game-btn-danger" onclick="switchTab('pos')">BACK TO POS</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-controls">
+            <div class="game-stats">
+                <div class="game-stat">
+                    <div style="font-size: 10px; color: var(--text-dim);">SCORE</div>
+                    <div id="gameScore" class="game-stat-value">0</div>
+                </div>
+                <div class="game-stat">
+                    <div style="font-size: 10px; color: var(--text-dim);">LIVES</div>
+                    <div id="gameLives" class="game-stat-value">3</div>
+                </div>
+                <div class="game-stat">
+                    <div style="font-size: 10px; color: var(--text-dim);">TIME</div>
+                    <div id="gameTime" class="game-stat-value">60</div>
+                </div>
+                <div class="game-stat">
+                    <div style="font-size: 10px; color: var(--text-dim);">PLAYER</div>
+                    <div id="playerName" class="game-stat-value">Guest</div>
+                </div>
+            </div>
+            
+            <div class="game-buttons">
+                <button class="game-btn" onclick="startGame()">START</button>
+                <button class="game-btn" onclick="pauseGame()">PAUSE</button>
+                <button class="game-btn game-btn-danger" onclick="switchTab('pos')">EXIT</button>
+            </div>
+        </div>
+        
+        <div class="game-leaderboard">
+            <div class="leaderboard-title">
+                <span>🏆 LEADERBOARD</span>
+                <button onclick="refreshLeaderboard()" style="background: none; border: none; color: var(--neon-blue); cursor: pointer; font-size: 10px;">🔄 Refresh</button>
+            </div>
+            <div id="leaderboardList"></div>
+        </div>
+        
+        <div class="game-instructions">
+            <h4>🎮 HOW TO PLAY:</h4>
+            <ul>
+                <li><strong>← →</strong> Arrow keys or <strong>A D</strong> keys to move basket</li>
+                <li>Catch falling fruits 🍎🍌🍊 to earn points</li>
+                <li>Avoid bombs 💣 or lose a life</li>
+                <li>Golden fruit 🥇 gives 50 points</li>
+                <li>Game ends when time runs out or lives reach 0</li>
+            </ul>
         </div>
     </div>
 </div>
@@ -501,6 +751,19 @@
     </div>
 </div>
 
+<!-- Player Name Modal -->
+<div class="modal" id="playerNameModal">
+    <div class="glass-popup">
+        <div class="popup-title">ENTER PLAYER NAME</div>
+        <div class="popup-sub">Enter your name for the leaderboard</div>
+        <input type="text" id="playerNameInput" class="popup-input" placeholder="Your Name" maxlength="15" onkeydown="if(event.key === 'Enter') savePlayerName()">
+        <div class="popup-btn-grid">
+            <button class="btn-action btn-cancel" onclick="closeModal('playerNameModal')">SKIP</button>
+            <button class="btn-action btn-pay" onclick="savePlayerName()">SAVE</button>
+        </div>
+    </div>
+</div>
+
 <script>
     // -------------------------------------------------------------------------
     // FIREBASE සැකසුම්
@@ -535,6 +798,26 @@
     let itemToEdit = null;
     let selectedEmoji = '🍎';
     let currentEmojiCategory = 'fruits';
+    let soldOutItems = new Set();
+    
+    // Game variables
+    let game = {
+        canvas: null,
+        ctx: null,
+        basket: { x: 300, y: 500, width: 100, height: 30 },
+        fruits: [],
+        bombs: [],
+        score: 0,
+        lives: 3,
+        time: 60,
+        isRunning: false,
+        isPaused: false,
+        lastTime: 0,
+        playerName: localStorage.getItem('jmart_player_name') || 'Guest',
+        keys: {},
+        gameLoopId: null,
+        leaderboard: []
+    };
     
     // Emoji Packs
     const emojiPacks = {
@@ -583,6 +866,15 @@
             updateStats();
             renderLogs();
             showNotification('Cloud Data Updated');
+        }
+    });
+
+    // Game leaderboard sync
+    database.ref('game_leaderboard').on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            game.leaderboard = Object.values(data).sort((a, b) => b.score - a.score);
+            renderLeaderboard();
         }
     });
 
@@ -659,23 +951,93 @@
         const grid = document.getElementById('itemGrid');
         const query = document.getElementById('pSearch').value.toLowerCase();
         grid.innerHTML = '';
-        db.filter(i => i.name.toLowerCase().includes(query)).forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'item-card glass';
-            card.innerHTML = `
-                <span class="stock-badge">${parseFloat(item.qty).toFixed(2)}kg</span>
-                <div style="font-size:30px;">${item.emoji || '🍎'}</div>
-                <b>${item.name}</b>
-                <br>
-                <small>
-                    Rs ${item.price}
-                    <button class="edit-btn" onclick="openEditItemModal('${item.name}')" title="Edit item">✏️</button>
-                </small>
-                ${item.barcode ? `<br><small style="font-size:9px;color:var(--text-dim)">${item.barcode}</small>` : ''}
-            `;
-            card.onclick = () => addToCart(item);
-            grid.appendChild(card);
+        
+        // Filter items - show only items with stock > 0 and not sold out
+        const availableItems = db.filter(i => 
+            i.name.toLowerCase().includes(query) && 
+            parseFloat(i.qty) > 0 && 
+            !soldOutItems.has(i.name)
+        );
+        
+        if (availableItems.length === 0) {
+            grid.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-dim);">No items available<br><small>Add stock or items are sold out</small></div>';
+        } else {
+            availableItems.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'item-card glass';
+                card.innerHTML = `
+                    <span class="stock-badge">${parseFloat(item.qty).toFixed(2)}kg</span>
+                    <div style="font-size:30px;">${item.emoji || '🍎'}</div>
+                    <b>${item.name}</b>
+                    <br>
+                    <small>
+                        Rs ${item.price}
+                        <button class="edit-btn" onclick="openEditItemModal('${item.name}')" title="Edit item">✏️</button>
+                    </small>
+                    ${item.barcode ? `<br><small style="font-size:9px;color:var(--text-dim)">${item.barcode}</small>` : ''}
+                `;
+                card.onclick = () => addToCart(item);
+                grid.appendChild(card);
+            });
+        }
+        
+        // Update the select dropdown in stock control
+        updateItemSelectDropdown();
+    }
+
+    // Update the select dropdown with available items
+    function updateItemSelectDropdown() {
+        const select = document.getElementById('stSelectName');
+        select.innerHTML = '<option value="">-- Select existing item or add new --</option>';
+        
+        // Add "New +" option
+        const newOption = document.createElement('option');
+        newOption.value = "new";
+        newOption.textContent = "➕ Add New Item";
+        newOption.className = "new-item-option";
+        select.appendChild(newOption);
+        
+        // Add available items
+        const availableItems = db.filter(i => parseFloat(i.qty) > 0);
+        availableItems.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.name;
+            option.textContent = `${item.name} (${parseFloat(item.qty).toFixed(2)}kg)`;
+            select.appendChild(option);
         });
+    }
+
+    // Handle item selection in stock control
+    function handleItemSelect() {
+        const selectedValue = document.getElementById('stSelectName').value;
+        
+        if (selectedValue === "new") {
+            // Clear all fields for new item
+            document.getElementById('stName').value = "";
+            document.getElementById('stCost').value = "";
+            document.getElementById('stPrice').value = "";
+            document.getElementById('stEmoji').value = "🍎";
+            document.getElementById('stBarcode').value = "";
+            document.getElementById('stCat').value = "Fruit";
+            
+            // Focus on name field
+            document.getElementById('stName').focus();
+        } else if (selectedValue) {
+            // Find the selected item
+            const item = db.find(i => i.name === selectedValue);
+            if (item) {
+                // Auto-fill the form with item details
+                document.getElementById('stName').value = item.name;
+                document.getElementById('stCost').value = item.cost;
+                document.getElementById('stPrice').value = item.price;
+                document.getElementById('stEmoji').value = item.emoji || "🍎";
+                document.getElementById('stBarcode').value = item.barcode || "";
+                document.getElementById('stCat').value = item.category || "Fruit";
+                
+                // Focus on quantity field
+                document.getElementById('stQty').focus();
+            }
+        }
     }
 
     // Item editing functionality with PIN lock
@@ -972,7 +1334,11 @@
             let p = db.find(x => x.name === c.name); 
             if (p) {
                 p.qty = (parseFloat(p.qty) - c.weight).toFixed(3);
-                if (p.qty < 0) p.qty = 0;
+                if (p.qty <= 0) {
+                    p.qty = 0;
+                    // Add to sold out items set
+                    soldOutItems.add(p.name);
+                }
             }
         });
 
@@ -993,6 +1359,8 @@
         });
         
         showReceipt(itemsForLog, total, currentDiscount, new Date().toLocaleTimeString());
+        
+        // Clear cart and refresh items (sold out items will be hidden)
         cart = []; 
         currentDiscount = 0;
         updateCartUI(); 
@@ -1016,12 +1384,14 @@
     }
 
     function clearStockForm() {
+        document.getElementById('stSelectName').value = "";
         document.getElementById('stName').value = "";
         document.getElementById('stCost').value = "";
         document.getElementById('stPrice').value = "";
-        document.getElementById('stEmoji').value = "";
+        document.getElementById('stEmoji').value = "🍎";
         document.getElementById('stBarcode').value = "";
         document.getElementById('stQty').value = "";
+        document.getElementById('stCat').value = "Fruit";
     }
 
     function clearExpenseForm() {
@@ -1044,6 +1414,7 @@
             let price = parseFloat(document.getElementById('stPrice').value);
             let emoji = document.getElementById('stEmoji').value || '🍎';
             let barcode = document.getElementById('stBarcode').value.trim();
+            let category = document.getElementById('stCat').value;
             
             if(!name) {
                 alert("අයිතමයේ නම ඇතුලත් කරන්න");
@@ -1056,6 +1427,8 @@
                 if (barcode && !existing.barcode) {
                     existing.barcode = barcode;
                 }
+                // Remove from sold out items if it was sold out
+                soldOutItems.delete(existing.name);
                 addLog(`තොග අලුත් කරන ලදී: ${name} (+${qty}kg)`, 'stock');
                 showNotification(`${name} stock increased by ${qty}kg`, 'success');
             } else {
@@ -1070,7 +1443,7 @@
                     qty, 
                     emoji: emoji,
                     barcode: barcode || null,
-                    category: document.getElementById('stCat').value
+                    category: category
                 }); 
                 addLog(`අලුත් අයිතමයක් එක් කරන ලදී: ${name}`, 'stock');
                 showNotification(`New item added: ${name}`, 'success');
@@ -1174,7 +1547,7 @@
     }
 
     function switchTab(t) {
-        ['view-pos', 'view-stock', 'view-reports'].forEach(v => document.getElementById(v).style.display = 'none');
+        ['view-pos', 'view-stock', 'view-reports', 'view-game'].forEach(v => document.getElementById(v).style.display = 'none');
         document.getElementById('view-' + t).style.display = t === 'pos' ? 'contents' : 'block';
         document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
         document.getElementById('tab-' + t).classList.add('active');
@@ -1185,7 +1558,368 @@
             document.getElementById('stSelect').innerHTML = db.map(i => 
                 `<option value="${i.name}">${i.name} (${parseFloat(i.qty).toFixed(2)}kg)</option>`
             ).join('');
+            // Update the item select dropdown
+            updateItemSelectDropdown();
+        } else if (t === 'game') {
+            // Initialize game when switching to game tab
+            setTimeout(initGame, 100);
+            // Refresh leaderboard
+            refreshLeaderboard();
         }
+    }
+
+    // =============================================
+    // GAME FUNCTIONS - FRUIT CATCH
+    // =============================================
+    function initGame() {
+        game.canvas = document.getElementById('gameCanvas');
+        game.ctx = game.canvas.getContext('2d');
+        
+        // Set canvas size
+        const container = game.canvas.parentElement;
+        game.canvas.width = container.clientWidth;
+        game.canvas.height = container.clientHeight;
+        
+        // Update player name display
+        document.getElementById('playerName').textContent = game.playerName;
+        
+        // Add keyboard event listeners
+        window.addEventListener('keydown', (e) => {
+            game.keys[e.key] = true;
+        });
+        
+        window.addEventListener('keyup', (e) => {
+            game.keys[e.key] = false;
+        });
+    }
+
+    function startGame() {
+        if (!game.playerName || game.playerName === 'Guest') {
+            document.getElementById('playerNameModal').style.display = 'flex';
+            document.getElementById('playerNameInput').focus();
+            return;
+        }
+        
+        if (game.isRunning) return;
+        
+        game.isRunning = true;
+        game.isPaused = false;
+        game.score = 0;
+        game.lives = 3;
+        game.time = 60;
+        game.fruits = [];
+        game.bombs = [];
+        game.basket.x = game.canvas.width / 2 - game.basket.width / 2;
+        
+        // Hide game over screen
+        document.getElementById('gameOverScreen').style.display = 'none';
+        
+        // Update UI
+        updateGameUI();
+        
+        // Start game loop
+        game.lastTime = Date.now();
+        game.gameLoopId = requestAnimationFrame(gameLoop);
+        
+        showNotification('Game started! Catch the fruits!', 'success');
+    }
+
+    function pauseGame() {
+        if (!game.isRunning) return;
+        
+        game.isPaused = !game.isPaused;
+        
+        if (game.isPaused) {
+            cancelAnimationFrame(game.gameLoopId);
+            showNotification('Game paused', 'warning');
+        } else {
+            game.lastTime = Date.now();
+            game.gameLoopId = requestAnimationFrame(gameLoop);
+            showNotification('Game resumed', 'success');
+        }
+    }
+
+    function gameLoop() {
+        if (!game.isRunning || game.isPaused) return;
+        
+        const currentTime = Date.now();
+        const deltaTime = currentTime - game.lastTime;
+        game.lastTime = currentTime;
+        
+        // Update game state
+        updateGame(deltaTime);
+        
+        // Draw game
+        drawGame();
+        
+        // Continue game loop
+        game.gameLoopId = requestAnimationFrame(gameLoop);
+    }
+
+    function updateGame(deltaTime) {
+        // Move basket based on keys
+        const speed = 5;
+        if (game.keys['ArrowLeft'] || game.keys['a'] || game.keys['A']) {
+            game.basket.x -= speed;
+        }
+        if (game.keys['ArrowRight'] || game.keys['d'] || game.keys['D']) {
+            game.basket.x += speed;
+        }
+        
+        // Keep basket within bounds
+        game.basket.x = Math.max(0, Math.min(game.canvas.width - game.basket.width, game.basket.x));
+        
+        // Update time
+        game.time -= deltaTime / 1000;
+        if (game.time <= 0) {
+            gameOver();
+            return;
+        }
+        
+        // Spawn fruits randomly
+        if (Math.random() < 0.03) {
+            spawnFruit();
+        }
+        
+        // Spawn bombs randomly
+        if (Math.random() < 0.01) {
+            spawnBomb();
+        }
+        
+        // Update fruits
+        for (let i = game.fruits.length - 1; i >= 0; i--) {
+            const fruit = game.fruits[i];
+            fruit.y += fruit.speed;
+            
+            // Check collision with basket
+            if (fruit.y + fruit.size > game.basket.y &&
+                fruit.x + fruit.size > game.basket.x &&
+                fruit.x < game.basket.x + game.basket.width) {
+                
+                // Add score based on fruit type
+                if (fruit.type === 'golden') {
+                    game.score += 50;
+                    showNotification('Golden fruit! +50 points', 'success');
+                } else {
+                    game.score += 10;
+                }
+                
+                // Remove fruit
+                game.fruits.splice(i, 1);
+                updateGameUI();
+                continue;
+            }
+            
+            // Remove if out of bounds
+            if (fruit.y > game.canvas.height) {
+                game.fruits.splice(i, 1);
+            }
+        }
+        
+        // Update bombs
+        for (let i = game.bombs.length - 1; i >= 0; i--) {
+            const bomb = game.bombs[i];
+            bomb.y += bomb.speed;
+            
+            // Check collision with basket
+            if (bomb.y + bomb.size > game.basket.y &&
+                bomb.x + bomb.size > game.basket.x &&
+                bomb.x < game.basket.x + game.basket.width) {
+                
+                // Lose a life
+                game.lives--;
+                updateGameUI();
+                showNotification('Bomb! Lost a life', 'error');
+                
+                // Remove bomb
+                game.bombs.splice(i, 1);
+                
+                // Check game over
+                if (game.lives <= 0) {
+                    gameOver();
+                    return;
+                }
+                continue;
+            }
+            
+            // Remove if out of bounds
+            if (bomb.y > game.canvas.height) {
+                game.bombs.splice(i, 1);
+            }
+        }
+    }
+
+    function drawGame() {
+        const ctx = game.ctx;
+        const canvas = game.canvas;
+        
+        // Clear canvas
+        ctx.fillStyle = 'rgba(5, 10, 15, 0.8)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw background grid
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x < canvas.width; x += 50) {
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, canvas.height);
+            ctx.stroke();
+        }
+        for (let y = 0; y < canvas.height; y += 50) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(canvas.width, y);
+            ctx.stroke();
+        }
+        
+        // Draw basket
+        ctx.fillStyle = 'var(--neon-green)';
+        ctx.fillRect(game.basket.x, game.basket.y, game.basket.width, game.basket.height);
+        
+        // Draw basket details
+        ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        ctx.fillRect(game.basket.x + 5, game.basket.y + 5, game.basket.width - 10, game.basket.height - 10);
+        
+        // Draw fruits
+        game.fruits.forEach(fruit => {
+            ctx.font = `${fruit.size}px Arial`;
+            ctx.fillStyle = fruit.type === 'golden' ? 'gold' : 'white';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(fruit.emoji, fruit.x + fruit.size/2, fruit.y + fruit.size/2);
+        });
+        
+        // Draw bombs
+        game.bombs.forEach(bomb => {
+            ctx.font = `${bomb.size}px Arial`;
+            ctx.fillStyle = 'var(--danger)';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('💣', bomb.x + bomb.size/2, bomb.y + bomb.size/2);
+        });
+        
+        // Draw score overlay
+        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+        ctx.fillRect(10, 10, 150, 80);
+        
+        ctx.font = '12px Inter';
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'left';
+        ctx.fillText(`SCORE: ${game.score}`, 20, 30);
+        ctx.fillText(`LIVES: ${'❤️'.repeat(game.lives)}`, 20, 50);
+        ctx.fillText(`TIME: ${Math.ceil(game.time)}`, 20, 70);
+    }
+
+    function spawnFruit() {
+        const fruits = ['🍎', '🍌', '🍊', '🍇', '🍓', '🍉'];
+        const emoji = fruits[Math.floor(Math.random() * fruits.length)];
+        const isGolden = Math.random() < 0.1; // 10% chance for golden fruit
+        
+        game.fruits.push({
+            x: Math.random() * (game.canvas.width - 40),
+            y: -40,
+            size: isGolden ? 35 : 30,
+            speed: 2 + Math.random() * 2,
+            emoji: isGolden ? '🥇' : emoji,
+            type: isGolden ? 'golden' : 'normal'
+        });
+    }
+
+    function spawnBomb() {
+        game.bombs.push({
+            x: Math.random() * (game.canvas.width - 40),
+            y: -40,
+            size: 30,
+            speed: 3 + Math.random() * 2,
+            emoji: '💣'
+        });
+    }
+
+    function updateGameUI() {
+        document.getElementById('gameScore').textContent = game.score;
+        document.getElementById('gameLives').textContent = game.lives;
+        document.getElementById('gameTime').textContent = Math.ceil(game.time);
+    }
+
+    function gameOver() {
+        game.isRunning = false;
+        cancelAnimationFrame(game.gameLoopId);
+        
+        // Show game over screen
+        document.getElementById('finalScore').textContent = game.score;
+        document.getElementById('gameOverScreen').style.display = 'flex';
+        
+        // Save score to leaderboard
+        saveToLeaderboard(game.playerName, game.score);
+        
+        showNotification(`Game Over! Final score: ${game.score}`, game.score > 100 ? 'success' : 'warning');
+    }
+
+    function restartGame() {
+        startGame();
+    }
+
+    function saveToLeaderboard(name, score) {
+        if (score <= 0) return;
+        
+        const entry = {
+            name: name,
+            score: score,
+            timestamp: Date.now(),
+            date: new Date().toLocaleDateString()
+        };
+        
+        // Save to Firebase
+        database.ref('game_leaderboard').push(entry);
+        
+        // Also save locally
+        let localLeaderboard = JSON.parse(localStorage.getItem('jmart_game_leaderboard')) || [];
+        localLeaderboard.push(entry);
+        localLeaderboard.sort((a, b) => b.score - a.score);
+        if (localLeaderboard.length > 20) localLeaderboard = localLeaderboard.slice(0, 20);
+        localStorage.setItem('jmart_game_leaderboard', JSON.stringify(localLeaderboard));
+    }
+
+    function renderLeaderboard() {
+        const list = document.getElementById('leaderboardList');
+        list.innerHTML = '';
+        
+        if (game.leaderboard.length === 0) {
+            list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-dim);">No scores yet. Be the first!</div>';
+            return;
+        }
+        
+        game.leaderboard.slice(0, 10).forEach((entry, index) => {
+            const div = document.createElement('div');
+            div.className = `leaderboard-item ${entry.name === game.playerName ? 'player-highlight' : ''}`;
+            div.innerHTML = `
+                <div class="leaderboard-rank">${index + 1}</div>
+                <div class="leaderboard-name">${entry.name}</div>
+                <div class="leaderboard-score">${entry.score}</div>
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    function refreshLeaderboard() {
+        // Load from Firebase
+        database.ref('game_leaderboard').once('value').then(snapshot => {
+            const data = snapshot.val();
+            if (data) {
+                game.leaderboard = Object.values(data).sort((a, b) => b.score - a.score);
+                renderLeaderboard();
+            }
+        });
+    }
+
+    function savePlayerName() {
+        const name = document.getElementById('playerNameInput').value.trim() || 'Guest';
+        game.playerName = name;
+        localStorage.setItem('jmart_player_name', name);
+        document.getElementById('playerName').textContent = name;
+        closeModal('playerNameModal');
+        startGame();
     }
 
     // =============================================
@@ -1377,35 +2111,24 @@
     }
 
     function autoFillStockForm(item) {
-        // Animate each field as it's filled
-        const fields = [
-            { id: 'stName', value: item.name },
-            { id: 'stCost', value: item.cost },
-            { id: 'stPrice', value: item.price },
-            { id: 'stEmoji', value: item.emoji || '🍎' },
-            { id: 'stBarcode', value: item.barcode || '' },
-            { id: 'stCat', value: item.category || 'Fruit' }
-        ];
+        // Auto-select the item in dropdown
+        document.getElementById('stSelectName').value = item.name;
         
-        // Set category first (special handling for select)
-        document.getElementById('stCat').value = item.category || 'Fruit';
+        // Trigger the change event to fill other fields
+        handleItemSelect();
         
-        // Fill other fields with animation
-        fields.forEach((field, index) => {
-            if (field.id !== 'stCat') {
-                setTimeout(() => {
-                    const element = document.getElementById(field.id);
-                    if (element) {
-                        element.value = field.value;
-                        element.classList.add('auto-fill-animation');
-                        
-                        // Remove animation class after animation completes
-                        setTimeout(() => {
-                            element.classList.remove('auto-fill-animation');
-                        }, 500);
-                    }
-                }, index * 100);
-            }
+        // Animate the filled fields
+        const fields = ['stName', 'stCost', 'stPrice', 'stEmoji', 'stBarcode'];
+        fields.forEach((fieldId, index) => {
+            setTimeout(() => {
+                const element = document.getElementById(fieldId);
+                if (element) {
+                    element.classList.add('auto-fill-animation');
+                    setTimeout(() => {
+                        element.classList.remove('auto-fill-animation');
+                    }, 500);
+                }
+            }, index * 100);
         });
         
         showNotification(`${item.name} loaded for stock update`, 'success');
@@ -1434,8 +2157,18 @@
                 item.barcode = generateBarcode(item.name);
                 needsSave = true;
             }
+            // Check for sold out items
+            if (parseFloat(item.qty) <= 0) {
+                soldOutItems.add(item.name);
+            }
         });
         if (needsSave) save();
+        
+        // Update the item select dropdown
+        updateItemSelectDropdown();
+        
+        // Load leaderboard
+        refreshLeaderboard();
         
         // Show welcome message
         setTimeout(() => {
@@ -1447,6 +2180,9 @@
     window.addEventListener('beforeunload', () => {
         if (scanner) {
             stopScanner();
+        }
+        if (game.gameLoopId) {
+            cancelAnimationFrame(game.gameLoopId);
         }
     });
 </script>
