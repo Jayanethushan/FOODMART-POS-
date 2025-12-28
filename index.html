@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>JAYANETH PRO | ADVANCED GLASS POS</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
     
@@ -37,6 +37,7 @@
             flex-direction: column; 
             overflow: hidden; 
             position: relative;
+            touch-action: pan-x pan-y;
         }
 
         body::before {
@@ -49,79 +50,415 @@
         .glass { background: var(--glass-bg); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: 18px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); }
         .privacy-blur { filter: blur(25px); pointer-events: none; transition: 0.5s; opacity: 0.3; }
 
-        header { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.6); border-bottom: 1px solid var(--glass-border); z-index: 10; }
-        .logo h1 { margin: 0; font-size: 22px; font-weight: 800; }
+        /* Responsive Header */
+        header { 
+            padding: 12px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: rgba(0,0,0,0.6); 
+            border-bottom: 1px solid var(--glass-border); 
+            z-index: 10;
+            min-height: 60px;
+        }
+        .logo h1 { margin: 0; font-size: 18px; font-weight: 800; white-space: nowrap; }
         .logo span { color: var(--neon-green); }
 
-        .dashboard-stats { display: flex; gap: 12px; }
-        .mini-stat { padding: 8px 15px; text-align: right; min-width: 120px; }
+        .dashboard-stats { 
+            display: flex; 
+            gap: 8px; 
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .mini-stat { 
+            padding: 6px 10px; 
+            text-align: right; 
+            min-width: 100px; 
+        }
         .stat-label { font-size: 9px; color: var(--text-dim); text-transform: uppercase; font-weight: 800; }
-        .stat-val { display: block; font-family: 'JetBrains Mono'; font-size: 15px; }
+        .stat-val { display: block; font-family: 'JetBrains Mono'; font-size: 13px; }
 
-        nav { display: flex; gap: 10px; padding: 12px 30px; background: rgba(0,0,0,0.3); z-index: 10; }
-        .nav-link { background: var(--glass-bg); border: 1px solid var(--glass-border); color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: 600; }
+        /* Responsive Navigation */
+        nav { 
+            display: flex; 
+            gap: 5px; 
+            padding: 8px 15px; 
+            background: rgba(0,0,0,0.3); 
+            z-index: 10; 
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+        .nav-link { 
+            background: var(--glass-bg); 
+            border: 1px solid var(--glass-border); 
+            color: white; 
+            padding: 8px 15px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 12px; 
+            font-weight: 600; 
+            min-width: fit-content;
+        }
         .nav-link.active { background: var(--neon-green); color: black; border-color: var(--neon-green); }
 
-        main { flex: 1; display: flex; padding: 20px; gap: 20px; overflow: hidden; }
-        .left-col { flex: 1.8; display: flex; flex-direction: column; gap: 15px; }
-        .right-col { flex: 1.2; display: flex; flex-direction: column; }
-
-        .search-bar, select { width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.4); color: white; margin-bottom: 10px; }
-        .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; overflow-y: auto; }
-        .item-card { padding: 15px 10px; text-align: center; cursor: pointer; transition: 0.3s; position: relative; }
-        .item-card:hover { border-color: var(--neon-green); background: rgba(138, 255, 103, 0.05); }
+        /* Main Content Area - Responsive */
+        main { 
+            flex: 1; 
+            display: flex; 
+            padding: 15px; 
+            gap: 15px; 
+            overflow: hidden; 
+            flex-direction: column;
+        }
         
-        .stock-badge { position: absolute; top: 8px; right: 8px; font-size: 9px; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; }
-        .cart-table { flex: 1; overflow-y: auto; padding: 10px; }
-        .cart-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 5px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; }
+        @media (min-width: 768px) {
+            main {
+                flex-direction: row;
+            }
+        }
+        
+        .left-col { 
+            flex: 1.8; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+            min-height: 300px;
+        }
+        .right-col { 
+            flex: 1.2; 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 400px;
+        }
+
+        /* Category Filter Buttons */
+        .category-filter {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            overflow-x: auto;
+            padding: 5px 0;
+        }
+        .category-btn {
+            padding: 8px 15px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            min-width: fit-content;
+        }
+        .category-btn.active {
+            background: var(--neon-blue);
+            color: black;
+            border-color: var(--neon-blue);
+        }
+
+        /* Search and Controls */
+        .search-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .search-bar, select { 
+            width: 100%; 
+            padding: 12px 15px; 
+            border-radius: 10px; 
+            border: 1px solid var(--glass-border); 
+            background: rgba(0,0,0,0.4); 
+            color: white; 
+            margin-bottom: 0;
+            font-size: 14px;
+        }
+        
+        /* Responsive Item Grid */
+        .item-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); 
+            gap: 8px; 
+            overflow-y: auto;
+            padding: 5px;
+        }
+        
+        @media (min-width: 1024px) {
+            .item-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                gap: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .item-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 6px;
+            }
+        }
+        
+        .item-card { 
+            padding: 12px 8px; 
+            text-align: center; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            position: relative;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .item-card:hover, .item-card:active { 
+            border-color: var(--neon-green); 
+            background: rgba(138, 255, 103, 0.05); 
+        }
+        
+        .stock-badge { 
+            position: absolute; 
+            top: 8px; 
+            right: 8px; 
+            font-size: 9px; 
+            background: rgba(255,255,255,0.1); 
+            padding: 2px 6px; 
+            border-radius: 4px; 
+        }
+        
+        /* Cart Area */
+        .cart-table { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 10px; 
+            min-height: 200px;
+        }
+        .cart-row { 
+            display: grid; 
+            grid-template-columns: 2fr 1fr 1fr 1fr auto; 
+            gap: 5px; 
+            padding: 8px 0; 
+            border-bottom: 1px solid rgba(255,255,255,0.05); 
+            font-size: 12px; 
+            align-items: center;
+        }
+        
+        @media (max-width: 480px) {
+            .cart-row {
+                grid-template-columns: 2fr 1fr 1fr auto;
+                font-size: 11px;
+            }
+            .cart-row span:nth-child(3) {
+                display: none;
+            }
+        }
 
         .grand-total { font-family: 'JetBrains Mono'; font-size: 24px; color: var(--neon-green); font-weight: 800; }
-        .btn-action { width: 100%; padding: 15px; border: none; border-radius: 12px; cursor: pointer; font-size: 14px; font-weight: 800; margin-top: 10px; }
+        .btn-action { 
+            width: 100%; 
+            padding: 15px; 
+            border: none; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-size: 14px; 
+            font-weight: 800; 
+            margin-top: 10px; 
+            transition: all 0.3s;
+            touch-action: manipulation;
+        }
+        .btn-action:active {
+            transform: scale(0.98);
+        }
         .btn-pay { background: var(--neon-green); color: black; }
 
-        .history-list { margin-top: 20px; max-height: 300px; overflow-y: auto; font-size: 13px; }
-        .history-item { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
-        .btn-view { background: #333; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+        /* Responsive History */
+        .history-list { 
+            margin-top: 20px; 
+            max-height: 300px; 
+            overflow-y: auto; 
+            font-size: 13px; 
+        }
+        .history-item { 
+            padding: 10px; 
+            border-bottom: 1px solid rgba(255,255,255,0.05); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-wrap: wrap;
+        }
+        .btn-view { 
+            background: #333; 
+            color: white; 
+            border: none; 
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 11px; 
+        }
 
-        /* Universal Popup Styles */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 2000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); }
-        .receipt-box { background: white; color: black; padding: 20px; width: 100%; max-width: 320px; border-radius: 8px; font-family: 'JetBrains Mono'; font-size: 12px; }
+        /* Responsive Modals */
+        .modal { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.92); 
+            z-index: 2000; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+        }
         
-        /* Modern Input Modals */
-        .glass-popup { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 30px; border-radius: 24px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .receipt-box { 
+            background: white; 
+            color: black; 
+            padding: 20px; 
+            width: 100%; 
+            max-width: 320px; 
+            border-radius: 8px; 
+            font-family: 'JetBrains Mono'; 
+            font-size: 12px; 
+        }
+        
+        /* Glass Popups - Responsive */
+        .glass-popup { 
+            background: var(--glass-bg); 
+            border: 1px solid var(--glass-border); 
+            padding: 25px; 
+            border-radius: 20px; 
+            width: 100%; 
+            max-width: 380px; 
+            text-align: center; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        
+        @media (max-width: 480px) {
+            .glass-popup {
+                padding: 20px;
+                border-radius: 15px;
+            }
+        }
+        
         .popup-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: var(--neon-blue); }
         .popup-sub { font-size: 12px; color: var(--text-dim); margin-bottom: 20px; }
-        .popup-input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: white; font-size: 20px; text-align: center; font-family: 'JetBrains Mono'; margin-bottom: 20px; outline: none; }
-        .popup-btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .popup-input { 
+            width: 100%; 
+            padding: 15px; 
+            border-radius: 12px; 
+            border: 1px solid var(--glass-border); 
+            background: rgba(255,255,255,0.05); 
+            color: white; 
+            font-size: 20px; 
+            text-align: center; 
+            font-family: 'JetBrains Mono'; 
+            margin-bottom: 20px; 
+            outline: none;
+            font-size: 18px;
+        }
+        .popup-btn-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 10px; 
+        }
         .btn-cancel { background: rgba(255,255,255,0.1); color: white; }
 
-        /* New PIN Error Modal */
-        .pin-error-modal { background: var(--glass-bg); border: 1px solid var(--danger); padding: 25px; border-radius: 20px; width: 90%; max-width: 300px; text-align: center; }
-        .pin-error-icon { font-size: 40px; margin-bottom: 15px; color: var(--danger); }
-        .pin-error-title { font-size: 16px; font-weight: 800; margin-bottom: 10px; color: var(--danger); }
-        .pin-error-text { font-size: 12px; color: var(--text-dim); margin-bottom: 20px; }
-        .pin-error-btn { background: var(--danger); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 600; }
-
-        /* Discount Row Styles */
-        .discount-row { display: flex; align-items: center; gap: 10px; margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 10px; }
+        /* Discount Row */
+        .discount-row { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            margin: 10px 0; 
+            padding: 10px; 
+            background: rgba(0,0,0,0.2); 
+            border-radius: 10px; 
+            flex-wrap: wrap;
+        }
         .discount-label { font-size: 12px; color: var(--text-dim); }
-        .discount-input { width: 80px; padding: 8px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: white; text-align: center; }
-        .apply-discount-btn { padding: 8px 15px; border-radius: 8px; background: var(--orange); color: black; border: none; cursor: pointer; font-weight: 600; }
-        .remove-discount-btn { padding: 8px 15px; border-radius: 8px; background: var(--danger); color: white; border: none; cursor: pointer; font-weight: 600; }
+        .discount-input { 
+            width: 80px; 
+            padding: 8px; 
+            border-radius: 8px; 
+            border: 1px solid var(--glass-border); 
+            background: rgba(255,255,255,0.05); 
+            color: white; 
+            text-align: center; 
+            font-size: 14px;
+        }
+        .apply-discount-btn, .remove-discount-btn { 
+            padding: 8px 15px; 
+            border-radius: 8px; 
+            background: var(--orange); 
+            color: black; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: 600; 
+            font-size: 12px;
+            touch-action: manipulation;
+        }
+        .remove-discount-btn { background: var(--danger); color: white; }
 
-        /* New Item Added Notification */
-        .notification { position: fixed; top: 20px; right: 20px; background: var(--neon-green); color: black; padding: 12px 20px; border-radius: 10px; font-weight: 600; z-index: 3000; animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-in 2.7s forwards; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        /* Notification */
+        .notification { 
+            position: fixed; 
+            top: 20px; 
+            right: 20px; 
+            background: var(--neon-green); 
+            color: black; 
+            padding: 12px 20px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            z-index: 3000; 
+            animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-in 2.7s forwards; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            max-width: 300px;
+            word-wrap: break-word;
+        }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
 
-        /* Scanner Modal Styles */
-        .scanner-modal { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 20px; border-radius: 20px; width: 90%; max-width: 500px; text-align: center; }
-        #scanner-container { width: 100%; height: 300px; margin: 20px 0; background: rgba(0,0,0,0.3); border-radius: 10px; overflow: hidden; position: relative; }
-        #scanner-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        /* Scanner Modal */
+        .scanner-modal { 
+            background: var(--glass-bg); 
+            border: 1px solid var(--glass-border); 
+            padding: 20px; 
+            border-radius: 20px; 
+            width: 100%; 
+            max-width: 500px; 
+            text-align: center; 
+        }
+        #scanner-container { 
+            width: 100%; 
+            height: 300px; 
+            margin: 20px 0; 
+            background: rgba(0,0,0,0.3); 
+            border-radius: 10px; 
+            overflow: hidden; 
+            position: relative; 
+        }
+        #scanner-placeholder { 
+            width: 100%; 
+            height: 100%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            flex-direction: column; 
+        }
         .scanner-icon { font-size: 50px; margin-bottom: 10px; color: var(--neon-blue); }
-        .scanner-btn { background: var(--neon-blue); color: black; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; margin: 10px 5px; }
+        .scanner-btn { 
+            background: var(--neon-blue); 
+            color: black; 
+            border: none; 
+            padding: 12px 20px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            margin: 10px 5px; 
+            font-size: 14px;
+            touch-action: manipulation;
+        }
 
-        /* Edit Button Styles - සුදු outline පැන්සල */
+        /* Edit Button */
         .edit-btn { 
             background: none; 
             border: none; 
@@ -129,7 +466,7 @@
             font-size: 12px; 
             margin-left: 5px; 
             color: white;
-            -webkit-text-stroke: 1px white; /* Outline effect */
+            -webkit-text-stroke: 1px white;
             text-stroke: 1px white;
             text-shadow: 
                 0 0 2px white,
@@ -137,8 +474,9 @@
             opacity: 0.7;
             transition: all 0.3s ease;
             padding: 2px;
+            touch-action: manipulation;
         }
-        .edit-btn:hover { 
+        .edit-btn:hover, .edit-btn:active { 
             opacity: 1; 
             color: var(--neon-blue);
             -webkit-text-stroke: 1px var(--neon-blue);
@@ -148,18 +486,23 @@
                 0 0 6px rgba(0, 242, 255, 0.5);
             transform: scale(1.1);
         }
-        .price-edit-input { width: 80px; padding: 5px; border-radius: 5px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.5); color: white; text-align: center; }
 
         /* Lock/Unlock Button */
-        #lockBtn { display: flex; align-items: center; gap: 5px; }
+        #lockBtn { 
+            display: flex; 
+            align-items: center; 
+            gap: 5px; 
+            white-space: nowrap;
+            padding: 8px 15px;
+        }
 
         /* Edit Item Modal */
         .edit-item-modal { 
             background: var(--glass-bg); 
             border: 1px solid var(--glass-border); 
-            padding: 25px; 
+            padding: 20px; 
             border-radius: 20px; 
-            width: 90%; 
+            width: 100%; 
             max-width: 400px; 
             text-align: center;
         }
@@ -172,34 +515,9 @@
             cursor: pointer;
             transition: 0.3s;
         }
-        .emoji-display:hover {
-            background: rgba(255,255,255,0.1);
-            transform: scale(1.1);
-        }
-        .emoji-category-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 15px 0;
-        }
-        .emoji-tab {
-            padding: 8px 15px;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--glass-border);
-            color: var(--text-dim);
-            cursor: pointer;
-            font-size: 12px;
-            transition: 0.3s;
-        }
-        .emoji-tab.active {
-            background: var(--neon-green);
-            color: black;
-            border-color: var(--neon-green);
-        }
         .emoji-grid {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 8px;
             margin: 15px 0;
             max-height: 200px;
@@ -208,67 +526,14 @@
             background: rgba(0,0,0,0.3);
             border-radius: 10px;
         }
-        .emoji-option {
-            font-size: 20px;
-            padding: 8px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .emoji-option:hover {
-            background: rgba(138, 255, 103, 0.2);
-            transform: scale(1.2);
-        }
-        .emoji-option.selected {
-            background: rgba(138, 255, 103, 0.3);
-            border: 1px solid var(--neon-green);
-        }
         
-        /* Weight Modal Styles - Fixed */
-        .weight-modal-content {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            padding: 30px;
-            border-radius: 24px;
-            width: 90%;
-            max-width: 380px;
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        @media (max-width: 480px) {
+            .emoji-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
-        
-        /* Auto-fill animation */
-        .auto-fill-animation {
-            animation: autoFill 0.5s ease-out;
-        }
-        @keyframes autoFill {
-            0% { background: rgba(138, 255, 103, 0); }
-            50% { background: rgba(138, 255, 103, 0.3); }
-            100% { background: rgba(138, 255, 103, 0); }
-        }
-        
-        /* Sold out badge */
-        .sold-out-badge {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            font-size: 9px;
-            background: rgba(255, 71, 71, 0.8);
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 600;
-        }
-        
-        /* New item option in select */
-        .new-item-option {
-            color: var(--neon-green) !important;
-            font-weight: 600 !important;
-        }
-        
-        /* Game Styles */
+
+        /* Game Styles - Responsive */
         .game-container {
             display: flex;
             flex-direction: column;
@@ -282,6 +547,7 @@
             flex: 1;
             position: relative;
             overflow: hidden;
+            min-height: 300px;
         }
         
         #gameCanvas {
@@ -292,161 +558,197 @@
         }
         
         .game-controls {
-            padding: 15px;
+            padding: 12px;
             background: rgba(0,0,0,0.3);
             border-top: 1px solid var(--glass-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
         .game-stats {
             display: flex;
-            gap: 15px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
         
         .game-stat {
             background: rgba(255,255,255,0.05);
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 8px;
-            font-size: 12px;
-            min-width: 80px;
+            font-size: 11px;
+            min-width: 70px;
+        }
+        
+        @media (max-width: 480px) {
+            .game-stat {
+                min-width: 60px;
+                padding: 5px 8px;
+                font-size: 10px;
+            }
         }
         
         .game-stat-value {
             font-family: 'JetBrains Mono';
-            font-size: 16px;
+            font-size: 14px;
             color: var(--neon-green);
             display: block;
         }
         
         .game-buttons {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
         
         .game-btn {
             background: var(--neon-blue);
             color: black;
             border: none;
-            padding: 8px 15px;
+            padding: 6px 12px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 11px;
             transition: 0.3s;
+            touch-action: manipulation;
         }
         
-        .game-btn:hover {
-            background: var(--neon-green);
-            transform: scale(1.05);
+        @media (max-width: 480px) {
+            .game-btn {
+                padding: 5px 10px;
+                font-size: 10px;
+            }
         }
         
-        .game-btn-danger {
-            background: var(--danger);
-            color: white;
+        .game-btn:active {
+            transform: scale(0.95);
         }
         
-        .game-leaderboard {
-            margin-top: 15px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
-            padding: 15px;
-            max-height: 200px;
-            overflow-y: auto;
+        /* Mobile-Specific Improvements */
+        @media (max-width: 768px) {
+            .logo h1 {
+                font-size: 16px;
+            }
+            
+            .mini-stat {
+                min-width: 80px;
+                padding: 5px 8px;
+            }
+            
+            .stat-val {
+                font-size: 11px;
+            }
+            
+            .nav-link {
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+            
+            main {
+                padding: 10px;
+                gap: 10px;
+            }
+            
+            .btn-action {
+                padding: 12px;
+                font-size: 13px;
+            }
+            
+            .grand-total {
+                font-size: 20px;
+            }
+            
+            /* Hide some elements on very small screens */
+            @media (max-width: 360px) {
+                .logo h1 {
+                    font-size: 14px;
+                }
+                
+                .dashboard-stats {
+                    display: none;
+                }
+            }
         }
         
-        .leaderboard-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--neon-blue);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        /* Tablet Optimizations */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .item-grid {
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            }
+            
+            .game-stat {
+                min-width: 85px;
+            }
         }
         
-        .leaderboard-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 11px;
+        /* Large Desktop Optimizations */
+        @media (min-width: 1440px) {
+            .item-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .mini-stat {
+                min-width: 140px;
+            }
         }
         
-        .leaderboard-rank {
-            width: 25px;
-            text-align: center;
-            font-weight: 600;
-            color: var(--neon-green);
+        /* Portrait Mode Adjustments */
+        @media (orientation: portrait) and (max-height: 700px) {
+            main {
+                flex-direction: column;
+                height: calc(100vh - 120px);
+            }
+            
+            .left-col, .right-col {
+                flex: none;
+            }
+            
+            .left-col {
+                height: 40%;
+            }
+            
+            .right-col {
+                height: 60%;
+            }
         }
         
-        .leaderboard-name {
-            flex: 1;
-            padding: 0 10px;
+        /* Landscape Mode Adjustments */
+        @media (orientation: landscape) and (max-height: 500px) {
+            header, nav {
+                flex-shrink: 0;
+            }
+            
+            main {
+                height: calc(100vh - 100px);
+            }
+            
+            .item-grid {
+                grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            }
         }
         
-        .leaderboard-score {
-            font-family: 'JetBrains Mono';
-            color: var(--neon-blue);
+        /* Prevent text size adjustment on mobile */
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
         }
         
-        .player-highlight {
-            background: rgba(138, 255, 103, 0.1);
-            border-radius: 5px;
-            padding: 5px;
+        /* Improve tap targets on mobile */
+        button, 
+        .item-card, 
+        .nav-link,
+        .game-btn {
+            min-height: 44px;
+            min-width: 44px;
         }
         
-        .game-over-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.9);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-        }
-        
-        .game-over-title {
-            font-size: 32px;
-            color: var(--danger);
-            margin-bottom: 10px;
-            font-weight: 800;
-        }
-        
-        .game-over-score {
-            font-size: 24px;
-            color: var(--neon-green);
-            margin-bottom: 20px;
-            font-family: 'JetBrains Mono';
-        }
-        
-        .game-instructions {
-            background: rgba(0,0,0,0.3);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-            font-size: 11px;
-            color: var(--text-dim);
-        }
-        
-        .game-instructions h4 {
-            margin: 0 0 8px 0;
-            color: var(--neon-blue);
-        }
-        
-        .game-instructions ul {
-            margin: 0;
-            padding-left: 15px;
-        }
-        
-        .game-instructions li {
-            margin-bottom: 5px;
+        /* Smooth scrolling for iOS */
+        .item-grid,
+        .cart-table,
+        .history-list {
+            -webkit-overflow-scrolling: touch;
         }
     </style>
 </head>
@@ -471,10 +773,19 @@
 <div id="view-pos" style="display: contents;">
     <main>
         <div class="left-col">
-            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <div class="search-controls">
                 <input type="text" id="pSearch" class="search-bar" placeholder="🔍 Search items..." oninput="renderItems()" style="flex: 1;">
-                <button class="nav-link" onclick="showScanner('pos')" style="min-width: 50px; padding: 12px; display: flex; align-items: center; justify-content: center;">📷</button>
+                <button class="nav-link" onclick="showScanner('pos')" style="min-width: 44px; padding: 12px; display: flex; align-items: center; justify-content: center;">📷</button>
             </div>
+            
+            <!-- Category Filter Buttons -->
+            <div class="category-filter">
+                <button class="category-btn active" onclick="filterItems('all')">All Items</button>
+                <button class="category-btn" onclick="filterItems('Fruit')">🍎 Fruits</button>
+                <button class="category-btn" onclick="filterItems('Vegetable')">🥦 Vegetables</button>
+                <button class="category-btn" onclick="filterItems('other')">📦 Other</button>
+            </div>
+            
             <div class="item-grid" id="itemGrid"></div>
         </div>
         <div class="right-col glass">
@@ -513,9 +824,11 @@
     </main>
 </div>
 
-<div id="view-stock" style="display: none; padding: 30px; overflow-y: auto;">
+<!-- Other views (stock, reports, game) remain the same but will be responsive due to CSS -->
+<div id="view-stock" style="display: none; padding: 20px; overflow-y: auto;">
     <div style="max-width: 1000px; margin: auto;">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+            <!-- Responsive grid for mobile -->
             <div class="glass" style="padding: 20px;">
                 <div style="font-weight: 800; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
                     <span>STOCK UPDATE</span>
@@ -533,7 +846,11 @@
                         </select>
                     </div>
                     <input type="text" id="stName" placeholder="Item Name (if new)" class="search-bar">
-                    <select id="stCat" class="search-bar"><option value="Fruit">Fruit</option><option value="Veg">Vegetable</option></select>
+                    <select id="stCat" class="search-bar">
+                        <option value="Fruit">Fruit</option>
+                        <option value="Vegetable">Vegetable</option>
+                        <option value="Other">Other</option>
+                    </select>
                     <input type="number" id="stCost" placeholder="Cost Price (1kg)" class="search-bar">
                     <input type="number" id="stPrice" placeholder="Selling Price (1kg)" class="search-bar">
                     <input type="text" id="stEmoji" placeholder="Emoji (🍎)" class="search-bar">
@@ -566,9 +883,9 @@
     </div>
 </div>
 
-<div id="view-reports" style="display: none; padding: 30px; overflow-y: auto;">
+<div id="view-reports" style="display: none; padding: 20px; overflow-y: auto;">
     <div id="reportPrivacyWrapper" class="privacy-blur">
-        <div class="rep-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+        <div class="rep-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px;">
             <div class="glass" style="padding:20px; text-align:center;"><span class="stat-label">Daily Revenue</span><h2 id="rDayRev">0.00</h2></div>
             <div class="glass" style="padding:20px; text-align:center;"><span class="stat-label">Daily Profit (Net)</span><h2 id="rDayProf" style="color:var(--neon-green)">0.00</h2></div>
             <div class="glass" style="padding:20px; text-align:center;"><span class="stat-label">Daily Loss</span><h2 id="rDayLoss" style="color:var(--danger)">0.00</h2></div>
@@ -581,8 +898,8 @@
     </div>
 </div>
 
-<!-- New Game Tab -->
-<div id="view-game" style="display: none; padding: 20px; overflow: hidden;">
+<!-- Game Tab -->
+<div id="view-game" style="display: none; padding: 15px; overflow: hidden;">
     <div class="game-container glass">
         <div class="game-canvas-container">
             <canvas id="gameCanvas"></canvas>
@@ -644,7 +961,7 @@
     </div>
 </div>
 
-<!-- Existing Modals -->
+<!-- All existing modals remain the same but will be responsive due to CSS -->
 <div class="modal" id="pinModal">
     <div class="glass-popup">
         <div class="popup-title">ENTER PIN</div>
@@ -657,9 +974,9 @@
     </div>
 </div>
 
-<!-- Weight Modal - Fixed Version -->
+<!-- Weight Modal -->
 <div class="modal" id="weightModal">
-    <div class="weight-modal-content">
+    <div class="glass-popup">
         <div class="popup-title" id="weightTitle">ENTER WEIGHT</div>
         <div class="popup-sub" id="weightSub">Enter weight in kilograms</div>
         <input type="number" id="weightInput" class="popup-input" placeholder="0.000" step="0.001" onkeydown="if(event.key === 'Enter') confirmWeight()">
@@ -673,23 +990,23 @@
 <div class="modal" id="modal">
     <div class="receipt-box" id="billArea"></div>
     <div style="text-align: center; width: 100%;">
-        <button class="btn-action btn-pay" style="width: 200px;" onclick="closeModal('modal')">OK</button>
+        <button class="btn-action btn-pay" style="width: 200px; margin-top: 15px;" onclick="closeModal('modal')">OK</button>
     </div>
 </div>
 
 <div class="modal" id="pinErrorModal">
-    <div class="pin-error-modal">
-        <div class="pin-error-icon">⚠️</div>
-        <div class="pin-error-title">වැරදි PIN අංකයකි!</div>
-        <div class="pin-error-text">කරුණාකර නිවැරදි PIN අංකය ඇතුලත් කරන්න.</div>
-        <button class="pin-error-btn" onclick="closeModal('pinErrorModal')">OK</button>
+    <div class="glass-popup" style="border-color: var(--danger);">
+        <div style="font-size: 40px; margin-bottom: 15px; color: var(--danger);">⚠️</div>
+        <div class="popup-title" style="color: var(--danger);">වැරදි PIN අංකයකි!</div>
+        <div class="popup-sub">කරුණාකර නිවැරදි PIN අංකය ඇතුලත් කරන්න.</div>
+        <button class="btn-action" style="background: var(--danger); color: white; margin-top: 20px;" onclick="closeModal('pinErrorModal')">OK</button>
     </div>
 </div>
 
-<!-- New Scanner Modal -->
+<!-- Scanner Modal -->
 <div class="modal" id="scannerModal">
-    <div class="scanner-modal">
-        <div class="popup-title">SCAN QR/ BARCODE</div>
+    <div class="glass-popup">
+        <div class="popup-title">SCAN QR/BARCODE</div>
         <div class="popup-sub">Point your camera at the QR code or barcode</div>
         <div id="scanner-container">
             <div id="scanner-placeholder">
@@ -697,7 +1014,7 @@
                 <div>Camera scanner will appear here</div>
             </div>
         </div>
-        <div style="margin-top: 20px;">
+        <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
             <button class="scanner-btn" onclick="startScanner()">Start Scanner</button>
             <button class="btn-cancel" onclick="stopScanner()">Stop Scanner</button>
             <button class="btn-cancel" onclick="closeModal('scannerModal')">Close</button>
@@ -708,19 +1025,19 @@
     </div>
 </div>
 
-<!-- Edit Item Modal - Enhanced with Emoji Packs -->
+<!-- Edit Item Modal -->
 <div class="modal" id="editItemModal">
-    <div class="edit-item-modal">
+    <div class="glass-popup">
         <div class="popup-title" id="editItemTitle">Edit Item</div>
         <div class="popup-sub" id="editItemSub">Change emoji and price</div>
         
         <div class="emoji-display" id="currentEmojiDisplay" onclick="toggleEmojiPicker()">🍎</div>
         
         <div id="emojiPicker" style="display: none;">
-            <div class="emoji-category-tabs">
-                <button class="emoji-tab active" onclick="switchEmojiCategory('fruits')">🍎 Fruits</button>
-                <button class="emoji-tab" onclick="switchEmojiCategory('vegetables')">🥦 Vegetables</button>
-                <button class="emoji-tab" onclick="switchEmojiCategory('other')">📦 Other</button>
+            <div style="display: flex; justify-content: center; gap: 10px; margin: 15px 0;">
+                <button class="category-btn" onclick="switchEmojiCategory('fruits')">🍎 Fruits</button>
+                <button class="category-btn" onclick="switchEmojiCategory('vegetables')">🥦 Vegetables</button>
+                <button class="category-btn" onclick="switchEmojiCategory('other')">📦 Other</button>
             </div>
             
             <div class="emoji-grid" id="emojiGrid"></div>
@@ -799,6 +1116,7 @@
     let selectedEmoji = '🍎';
     let currentEmojiCategory = 'fruits';
     let soldOutItems = new Set();
+    let currentCategoryFilter = 'all';
     
     // Game variables
     let game = {
@@ -947,17 +1265,37 @@
         showReceipt(log.data.items, log.data.total, log.data.discount || 0, log.time);
     }
 
+    // Category Filter Function
+    function filterItems(category) {
+        currentCategoryFilter = category;
+        
+        // Update active button
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+        
+        renderItems();
+    }
+
     function renderItems() {
         const grid = document.getElementById('itemGrid');
         const query = document.getElementById('pSearch').value.toLowerCase();
         grid.innerHTML = '';
         
-        // Filter items - show only items with stock > 0 and not sold out
-        const availableItems = db.filter(i => 
-            i.name.toLowerCase().includes(query) && 
-            parseFloat(i.qty) > 0 && 
-            !soldOutItems.has(i.name)
-        );
+        // Filter items based on category and search
+        const availableItems = db.filter(i => {
+            const matchesSearch = i.name.toLowerCase().includes(query);
+            const matchesCategory = currentCategoryFilter === 'all' || 
+                                  i.category === currentCategoryFilter ||
+                                  (currentCategoryFilter === 'other' && 
+                                   i.category !== 'Fruit' && 
+                                   i.category !== 'Vegetable');
+            const hasStock = parseFloat(i.qty) > 0;
+            const notSoldOut = !soldOutItems.has(i.name);
+            
+            return matchesSearch && matchesCategory && hasStock && notSoldOut;
+        });
         
         if (availableItems.length === 0) {
             grid.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-dim);">No items available<br><small>Add stock or items are sold out</small></div>';
@@ -994,17 +1332,48 @@
         const newOption = document.createElement('option');
         newOption.value = "new";
         newOption.textContent = "➕ Add New Item";
-        newOption.className = "new-item-option";
         select.appendChild(newOption);
         
-        // Add available items
-        const availableItems = db.filter(i => parseFloat(i.qty) > 0);
-        availableItems.forEach(item => {
-            const option = document.createElement('option');
-            option.value = item.name;
-            option.textContent = `${item.name} (${parseFloat(item.qty).toFixed(2)}kg)`;
-            select.appendChild(option);
-        });
+        // Add available items grouped by category
+        const fruits = db.filter(i => i.category === 'Fruit');
+        const vegetables = db.filter(i => i.category === 'Vegetable');
+        const other = db.filter(i => i.category !== 'Fruit' && i.category !== 'Vegetable');
+        
+        if (fruits.length > 0) {
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = "🍎 Fruits";
+            fruits.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.name;
+                option.textContent = `${item.name} (${parseFloat(item.qty).toFixed(2)}kg)`;
+                optgroup.appendChild(option);
+            });
+            select.appendChild(optgroup);
+        }
+        
+        if (vegetables.length > 0) {
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = "🥦 Vegetables";
+            vegetables.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.name;
+                option.textContent = `${item.name} (${parseFloat(item.qty).toFixed(2)}kg)`;
+                optgroup.appendChild(option);
+            });
+            select.appendChild(optgroup);
+        }
+        
+        if (other.length > 0) {
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = "📦 Other Items";
+            other.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.name;
+                option.textContent = `${item.name} (${parseFloat(item.qty).toFixed(2)}kg)`;
+                optgroup.appendChild(option);
+            });
+            select.appendChild(optgroup);
+        }
     }
 
     // Handle item selection in stock control
@@ -1081,8 +1450,7 @@
         document.getElementById('editItemPrice').value = item.price;
         
         // Set active tab
-        document.querySelectorAll('.emoji-tab').forEach(tab => tab.classList.remove('active'));
-        document.querySelector('.emoji-tab[onclick*="fruits"]').classList.add('active');
+        document.querySelectorAll('.category-btn').forEach(tab => tab.classList.remove('active'));
         
         // Load fruits emojis by default
         loadEmojiGrid('fruits');
@@ -1103,10 +1471,6 @@
 
     function switchEmojiCategory(category) {
         currentEmojiCategory = category;
-        
-        // Update tabs
-        document.querySelectorAll('.emoji-tab').forEach(tab => tab.classList.remove('active'));
-        document.querySelector(`.emoji-tab[onclick*="${category}"]`).classList.add('active');
         
         // Load emojis
         loadEmojiGrid(category);
@@ -1569,16 +1933,14 @@
     }
 
     // =============================================
-    // GAME FUNCTIONS - FRUIT CATCH
+    // GAME FUNCTIONS - FRUIT CATCH (RESPONSIVE)
     // =============================================
     function initGame() {
         game.canvas = document.getElementById('gameCanvas');
         game.ctx = game.canvas.getContext('2d');
         
-        // Set canvas size
-        const container = game.canvas.parentElement;
-        game.canvas.width = container.clientWidth;
-        game.canvas.height = container.clientHeight;
+        // Set canvas size - responsive
+        resizeGameCanvas();
         
         // Update player name display
         document.getElementById('playerName').textContent = game.playerName;
@@ -1591,6 +1953,29 @@
         window.addEventListener('keyup', (e) => {
             game.keys[e.key] = false;
         });
+        
+        // Add resize listener
+        window.addEventListener('resize', resizeGameCanvas);
+    }
+    
+    function resizeGameCanvas() {
+        if (!game.canvas) return;
+        
+        const container = game.canvas.parentElement;
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        
+        game.canvas.width = width;
+        game.canvas.height = height;
+        
+        // Adjust basket position
+        game.basket.x = width / 2 - game.basket.width / 2;
+        game.basket.y = height - 50;
+        
+        // Redraw if game is running
+        if (game.isRunning && !game.isPaused) {
+            drawGame();
+        }
     }
 
     function startGame() {
@@ -1609,7 +1994,10 @@
         game.time = 60;
         game.fruits = [];
         game.bombs = [];
+        
+        // Set basket position based on canvas size
         game.basket.x = game.canvas.width / 2 - game.basket.width / 2;
+        game.basket.y = game.canvas.height - 50;
         
         // Hide game over screen
         document.getElementById('gameOverScreen').style.display = 'none';
@@ -1658,7 +2046,7 @@
 
     function updateGame(deltaTime) {
         // Move basket based on keys
-        const speed = 5;
+        const speed = 5 * (game.canvas.width / 800); // Scale speed based on screen size
         if (game.keys['ArrowLeft'] || game.keys['a'] || game.keys['A']) {
             game.basket.x -= speed;
         }
@@ -1760,13 +2148,14 @@
         // Draw background grid
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
         ctx.lineWidth = 1;
-        for (let x = 0; x < canvas.width; x += 50) {
+        const gridSize = 50 * (canvas.width / 800);
+        for (let x = 0; x < canvas.width; x += gridSize) {
             ctx.beginPath();
             ctx.moveTo(x, 0);
             ctx.lineTo(x, canvas.height);
             ctx.stroke();
         }
-        for (let y = 0; y < canvas.height; y += 50) {
+        for (let y = 0; y < canvas.height; y += gridSize) {
             ctx.beginPath();
             ctx.moveTo(0, y);
             ctx.lineTo(canvas.width, y);
@@ -1816,10 +2205,12 @@
         const emoji = fruits[Math.floor(Math.random() * fruits.length)];
         const isGolden = Math.random() < 0.1; // 10% chance for golden fruit
         
+        const size = 30 * (game.canvas.width / 800);
+        
         game.fruits.push({
-            x: Math.random() * (game.canvas.width - 40),
-            y: -40,
-            size: isGolden ? 35 : 30,
+            x: Math.random() * (game.canvas.width - size * 2),
+            y: -size,
+            size: isGolden ? size * 1.2 : size,
             speed: 2 + Math.random() * 2,
             emoji: isGolden ? '🥇' : emoji,
             type: isGolden ? 'golden' : 'normal'
@@ -1827,10 +2218,12 @@
     }
 
     function spawnBomb() {
+        const size = 30 * (game.canvas.width / 800);
+        
         game.bombs.push({
-            x: Math.random() * (game.canvas.width - 40),
-            y: -40,
-            size: 30,
+            x: Math.random() * (game.canvas.width - size * 2),
+            y: -size,
+            size: size,
             speed: 3 + Math.random() * 2,
             emoji: '💣'
         });
@@ -1844,7 +2237,9 @@
 
     function gameOver() {
         game.isRunning = false;
-        cancelAnimationFrame(game.gameLoopId);
+        if (game.gameLoopId) {
+            cancelAnimationFrame(game.gameLoopId);
+        }
         
         // Show game over screen
         document.getElementById('finalScore').textContent = game.score;
@@ -1923,7 +2318,7 @@
     }
 
     // =============================================
-    // QR/BARCODE SCANNER FUNCTIONS - FIXED
+    // QR/BARCODE SCANNER FUNCTIONS
     // =============================================
     function showScanner(mode) {
         currentScannerMode = mode;
@@ -2097,13 +2492,7 @@
                     setTimeout(() => {
                         closeModal('scannerModal');
                         document.getElementById('stBarcode').value = code;
-                        document.getElementById('stBarcode').classList.add('auto-fill-animation');
                         showNotification(`Barcode ${code} saved. Fill other details.`, 'info');
-                        
-                        // Remove animation class after animation completes
-                        setTimeout(() => {
-                            document.getElementById('stBarcode').classList.remove('auto-fill-animation');
-                        }, 500);
                     }, 500);
                     break;
             }
@@ -2116,20 +2505,6 @@
         
         // Trigger the change event to fill other fields
         handleItemSelect();
-        
-        // Animate the filled fields
-        const fields = ['stName', 'stCost', 'stPrice', 'stEmoji', 'stBarcode'];
-        fields.forEach((fieldId, index) => {
-            setTimeout(() => {
-                const element = document.getElementById(fieldId);
-                if (element) {
-                    element.classList.add('auto-fill-animation');
-                    setTimeout(() => {
-                        element.classList.remove('auto-fill-animation');
-                    }, 500);
-                }
-            }, index * 100);
-        });
         
         showNotification(`${item.name} loaded for stock update`, 'success');
     }
@@ -2170,6 +2545,13 @@
         // Load leaderboard
         refreshLeaderboard();
         
+        // Initialize game for responsive canvas
+        setTimeout(() => {
+            if (game.canvas) {
+                resizeGameCanvas();
+            }
+        }, 500);
+        
         // Show welcome message
         setTimeout(() => {
             showNotification('Jayaneth Pro Mart POS Ready');
@@ -2183,6 +2565,16 @@
         }
         if (game.gameLoopId) {
             cancelAnimationFrame(game.gameLoopId);
+        }
+    });
+
+    // Handle window resize for responsive design
+    window.addEventListener('resize', () => {
+        // Re-render items to adjust grid
+        renderItems();
+        // Resize game canvas if game is active
+        if (game.canvas && document.getElementById('view-game').style.display !== 'none') {
+            resizeGameCanvas();
         }
     });
 </script>
