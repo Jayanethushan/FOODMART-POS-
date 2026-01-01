@@ -3286,6 +3286,402 @@
             resizeGameCanvas();
         }
     });
+
+    // ======================================================================
+// STOCK TABLE BUTTON STYLE FIXER - සියලුම බොත්තම් එකම look එකට
+// ======================================================================
+
+// Stock table බොත්තම් CSS styles
+const stockButtonStyles = `
+    /* Stock Table Action Buttons - Unified Style */
+    .stock-actions {
+        display: flex !important;
+        gap: 8px !important;
+        align-items: center !important;
+    }
+    
+    .action-btn {
+        padding: 8px 12px !important;
+        border-radius: 8px !important;
+        font-size: 11px !important;
+        cursor: pointer !important;
+        font-weight: 600 !important;
+        transition: all 0.3s !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 5px !important;
+        min-height: 36px !important;
+        min-width: 70px !important;
+        justify-content: center !important;
+        border: none !important;
+        outline: none !important;
+    }
+    
+    /* Edit Button - නිල් */
+    .edit-btn-stock {
+        background: rgba(0, 242, 255, 0.2) !important;
+        color: var(--neon-blue) !important;
+        border: 1px solid rgba(0, 242, 255, 0.5) !important;
+    }
+    
+    .edit-btn-stock:hover {
+        background: rgba(0, 242, 255, 0.3) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 242, 255, 0.3) !important;
+    }
+    
+    /* Delete Button - රතු */
+    .delete-btn-stock {
+        background: rgba(255, 71, 71, 0.2) !important;
+        color: var(--danger) !important;
+        border: 1px solid rgba(255, 71, 71, 0.5) !important;
+    }
+    
+    .delete-btn-stock:hover {
+        background: rgba(255, 71, 71, 0.3) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 71, 71, 0.3) !important;
+    }
+    
+    /* Restock Button - කොළ */
+    .restock-btn-stock {
+        background: rgba(138, 255, 103, 0.2) !important;
+        color: var(--neon-green) !important;
+        border: 1px solid rgba(138, 255, 103, 0.5) !important;
+        min-width: 80px !important;
+    }
+    
+    .restock-btn-stock:hover {
+        background: rgba(138, 255, 103, 0.3) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(138, 255, 103, 0.3) !important;
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .stock-actions {
+            flex-wrap: wrap !important;
+            gap: 6px !important;
+        }
+        
+        .action-btn {
+            padding: 6px 10px !important;
+            font-size: 10px !important;
+            min-height: 32px !important;
+            min-width: 60px !important;
+        }
+        
+        .restock-btn-stock {
+            min-width: 70px !important;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .stock-actions {
+            flex-direction: column !important;
+            align-items: stretch !important;
+        }
+        
+        .action-btn {
+            width: 100% !important;
+            justify-content: center !important;
+        }
+    }
+`;
+
+// CSS styles inject කරන function
+function injectStockButtonStyles() {
+    // දැනටමත් styles inject කර ඇත්දැයි පරීක්ෂා කරන්න
+    if (document.getElementById('stock-button-styles')) return;
+    
+    const style = document.createElement('style');
+    style.id = 'stock-button-styles';
+    style.textContent = stockButtonStyles;
+    document.head.appendChild(style);
+    
+    console.log('✅ Stock button styles injected');
+}
+
+// Stock table load වූ සෑම අවස්ථාවකම button styles apply කරන්න
+function setupStockButtonWatcher() {
+    // loadStockTable function override කරන්න
+    const originalLoadStockTable = window.loadStockTable;
+    
+    if (originalLoadStockTable) {
+        window.loadStockTable = function() {
+            const result = originalLoadStockTable.apply(this, arguments);
+            
+            // Stock table load වූ පසු button styles apply කරන්න
+            setTimeout(() => {
+                injectStockButtonStyles();
+                applyButtonStyles();
+            }, 100);
+            
+            return result;
+        };
+    }
+    
+    // Switch tab වූ විටත් styles apply කරන්න
+    const originalSwitchTab = window.switchTab;
+    
+    if (originalSwitchTab) {
+        window.switchTab = function(tab) {
+            const result = originalSwitchTab.apply(this, arguments);
+            
+            if (tab === 'stock') {
+                setTimeout(() => {
+                    injectStockButtonStyles();
+                    applyButtonStyles();
+                }, 300);
+            }
+            
+            return result;
+        };
+    }
+    
+    console.log('👁️ Stock button style watcher setup complete');
+}
+
+// Button styles apply කරන function
+function applyButtonStyles() {
+    const stockTable = document.getElementById('stockTableBody');
+    if (!stockTable) return;
+    
+    const editButtons = stockTable.querySelectorAll('.edit-btn-stock');
+    const deleteButtons = stockTable.querySelectorAll('.delete-btn-stock');
+    const restockButtons = stockTable.querySelectorAll('.restock-btn-stock');
+    
+    // Edit buttons
+    editButtons.forEach(btn => {
+        btn.style.cssText = `
+            background: rgba(0, 242, 255, 0.2) !important;
+            color: var(--neon-blue) !important;
+            border: 1px solid rgba(0, 242, 255, 0.5) !important;
+            padding: 8px 12px !important;
+            border-radius: 8px !important;
+            font-size: 11px !important;
+            cursor: pointer !important;
+            font-weight: 600 !important;
+            transition: all 0.3s !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 5px !important;
+            min-height: 36px !important;
+            min-width: 70px !important;
+            justify-content: center !important;
+        `;
+    });
+    
+    // Delete buttons
+    deleteButtons.forEach(btn => {
+        btn.style.cssText = `
+            background: rgba(255, 71, 71, 0.2) !important;
+            color: var(--danger) !important;
+            border: 1px solid rgba(255, 71, 71, 0.5) !important;
+            padding: 8px 12px !important;
+            border-radius: 8px !important;
+            font-size: 11px !important;
+            cursor: pointer !important;
+            font-weight: 600 !important;
+            transition: all 0.3s !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 5px !important;
+            min-height: 36px !important;
+            min-width: 70px !important;
+            justify-content: center !important;
+        `;
+    });
+    
+    // Restock buttons
+    restockButtons.forEach(btn => {
+        btn.style.cssText = `
+            background: rgba(138, 255, 103, 0.2) !important;
+            color: var(--neon-green) !important;
+            border: 1px solid rgba(138, 255, 103, 0.5) !important;
+            padding: 8px 12px !important;
+            border-radius: 8px !important;
+            font-size: 11px !important;
+            cursor: pointer !important;
+            font-weight: 600 !important;
+            transition: all 0.3s !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 5px !important;
+            min-height: 36px !important;
+            min-width: 80px !important;
+            justify-content: center !important;
+        `;
+    });
+    
+    console.log(`🎨 Applied styles to: ${editButtons.length} Edit, ${deleteButtons.length} Delete, ${restockButtons.length} Restock buttons`);
+}
+
+// Manual fix කිරීමට button එකක් එකතු කරන්න
+function addFixButtonToStockPage() {
+    // දැනටමත් button එක තිබේදැයි පරීක්ෂා කරන්න
+    if (document.getElementById('fixStockStylesBtn')) return;
+    
+    // Stock view එකට button එකක් එකතු කරන්න
+    const stockView = document.getElementById('view-stock');
+    if (!stockView) return;
+    
+    const fixButton = document.createElement('button');
+    fixButton.id = 'fixStockStylesBtn';
+    fixButton.innerHTML = '🎨 Fix Button Styles';
+    fixButton.style.cssText = `
+        background: linear-gradient(135deg, #8a2be2, #9370db);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 12px;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        box-shadow: 0 4px 12px rgba(138, 43, 226, 0.3);
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    `;
+    
+    // Hover effect
+    fixButton.onmouseenter = () => {
+        fixButton.style.transform = 'translateY(-3px)';
+        fixButton.style.boxShadow = '0 6px 16px rgba(138, 43, 226, 0.4)';
+    };
+    
+    fixButton.onmouseleave = () => {
+        fixButton.style.transform = 'translateY(0)';
+        fixButton.style.boxShadow = '0 4px 12px rgba(138, 43, 226, 0.3)';
+    };
+    
+    // Click event
+    fixButton.onclick = () => {
+        injectStockButtonStyles();
+        applyButtonStyles();
+        
+        // Visual feedback
+        fixButton.innerHTML = '✅ Fixed!';
+        fixButton.style.background = 'linear-gradient(135deg, #8aff67, #00f2ff)';
+        
+        setTimeout(() => {
+            fixButton.innerHTML = '🎨 Fix Button Styles';
+            fixButton.style.background = 'linear-gradient(135deg, #8a2be2, #9370db)';
+        }, 2000);
+    };
+    
+    stockView.appendChild(fixButton);
+    console.log('✅ Fix button added to stock page');
+}
+
+// Initialize stock button style system
+function initStockButtonStyleSystem() {
+    console.log('🔄 Initializing stock button style system...');
+    
+    // 1. CSS styles inject කරන්න
+    injectStockButtonStyles();
+    
+    // 2. Stock table watcher setup කරන්න
+    setupStockButtonWatcher();
+    
+    // 3. Stock පිටුවට fix button එකතු කරන්න
+    setTimeout(addFixButtonToStockPage, 1000);
+    
+    // 4. ප්‍රථම වරට stock tab එකට switch වූ විට styles apply කරන්න
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.id === 'tab-stock') {
+            setTimeout(() => {
+                injectStockButtonStyles();
+                applyButtonStyles();
+                addFixButtonToStockPage();
+            }, 500);
+        }
+    });
+    
+    // 5. Page load වූ විටත් apply කරන්න
+    setTimeout(() => {
+        if (document.getElementById('view-stock').style.display !== 'none') {
+            injectStockButtonStyles();
+            applyButtonStyles();
+            addFixButtonToStockPage();
+        }
+    }, 2000);
+    
+    console.log('✅ Stock button style system initialized');
+}
+
+// පිටුව load වූ පසු initialize කරන්න
+setTimeout(initStockButtonStyleSystem, 1500);
+
+// ======================================================================
+// PAGELOAD EVENT LISTENER (වඩාත් reliable ක්‍රමය)
+// ======================================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Stock button style system initialize කරන්න
+    setTimeout(initStockButtonStyleSystem, 500);
+    
+    // Mutation Observer setup කරන්න (stock table dynamically load වූ විට)
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.addedNodes.length) {
+                mutation.addedNodes.forEach(function(node) {
+                    if (node.nodeType === 1) {
+                        if (node.id === 'stockTableBody' || 
+                            node.classList && node.classList.contains('stock-table')) {
+                            setTimeout(() => {
+                                injectStockButtonStyles();
+                                applyButtonStyles();
+                            }, 100);
+                        }
+                    }
+                });
+            }
+        });
+    });
+    
+    // Stock view observe කරන්න
+    const stockView = document.getElementById('view-stock');
+    if (stockView) {
+        observer.observe(stockView, {
+            childList: true,
+            subtree: true
+        });
+    }
+    
+    console.log('👀 Stock table mutation observer started');
+});
+
+// ======================================================================
+// CONSOLE COMMANDS (debugging සඳහා)
+// ======================================================================
+
+// Browser console එකේ run කරන්න පුළුවන් commands
+window.stockStyleCommands = {
+    inject: injectStockButtonStyles,
+    apply: applyButtonStyles,
+    fixAll: function() {
+        injectStockButtonStyles();
+        applyButtonStyles();
+        console.log('✅ All stock button styles fixed');
+    },
+    refresh: function() {
+        if (window.loadStockTable) {
+            window.loadStockTable();
+            setTimeout(() => {
+                injectStockButtonStyles();
+                applyButtonStyles();
+            }, 300);
+        }
+    }
+};
+
+console.log('🎨 Stock button style fixer loaded. Use stockStyleCommands.fixAll() to fix all buttons.');
  
 </script>
 </body>
