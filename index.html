@@ -3286,6 +3286,469 @@
             resizeGameCanvas();
         }
     });
+    // -------------------------------------------------------------------------
+// පැරණි බිල්පත් දත්ත නව පද්ධතියට හැඩගැස්වීම
+// -------------------------------------------------------------------------
+
+/**
+ * පැරණි logs වල ඇති විකුණුම් දත්ත sales array එකට එකතු කරයි
+ */
+function migrateOldSalesFromLogs() {
+    console.log("📊 පැරණි logs වලින් විකුණුම් දත්ත ලබා ගැනීම...");
+    
+    let migratedCount = 0;
+    let skippedCount = 0;
+    
+    // logs array එක හරියට ඇතිදැයි පරීක්ෂා කරන්න
+    if (!logs || !Array.isArray(logs)) {
+        console.error("Logs array not found or invalid");
+        return 0;
+    }
+    
+    // sales array එක හරියට ඇතිදැයි පරීක්ෂා කරන්න
+    if (!sales || !Array.isArray(sales)) {
+        console.error("Sales array not found or invalid");
+        sales = [];
+    }
+    
+    // පැරණි logs වලින් sale type එකක් ඇති entries ගෙන ඒවා sales එකට එකතු කරන්න
+    logs.forEach((log, index) => {
+        // පැරණි sale log එකක් හදුනා ගන්න
+        if (log && log.type === 'sale' && log.data) {
+            // මෙම sale දැනටමත් sales array එකේ තියෙනවාදැයි පරීක්ෂා කරන්න
+            const existingSale = sales.find(s => s.id === log.data.id || 
+                (s.date === log.data.date && s.total === log.data.total));
+            
+            if (!existingSale) {
+                // නව sale object එකක් සාදන්න
+                const saleData = log.data;
+                
+                // අනිවාර්යය fields සහිත sale object එකක් සාදන්න
+                const newSale = {
+                    id: saleData.id || 'LOG_' + log.id,
+                    total: saleData.total || 0,
+                    subtotal: saleData.subtotal || saleData.total || 0,
+                    discount: saleData.discount || 0,
+                    profit: saleData.profit || 0,
+                    date: saleData.date || log.date || new Date().toLocaleDateString(),
+                    time: saleData.time || log.time || new Date().toLocaleTimeString(),
+                    timestamp: saleData.timestamp || log.id || Date.now(),
+                    month: saleData.month !== undefined ? saleData.month : getMonthFromDate(saleData.date || log.date),
+                    itemsCount: saleData.itemsCount || (saleData.items ? saleData.items.length : 0),
+                    items: saleData.items || [],
+                    customer: saleData.customer || null,
+                    syncId: saleData.syncId || syncId || 'migrated_from_logs'
+                };
+                
+                // Profit ගණනය කරන්න (නැත්නම්)
+                if (newSale.profit === 0 && newSale.items && newSale.items.length > 0) {
+                    const totalCost = newSale.items.reduce((sum, item) => {
+                        const itemCost = item.cost || 0;
+                        const itemWeight = item.weight || item.qty || 1;
+                        return sum + (itemCost * itemWeight);
+                    }, 0);
+                    newSale.profit = newSale.total - totalCost;
+                }
+                
+                // Sales array එකට එකතු කරන්න
+                sales.push(newSale);
+                migratedCount++;
+                
+                console.log(`✅ Log migrated: ${newSale.date} ${newSale.time} - Rs ${newSale.total.toFixed(2)}`);
+            } else {
+                skippedCount++;
+            }
+        }
+    });
+    
+    console.log(`📈 ${migratedCount} sales migrated from logs, ${skippedCount} already existed`);
+    
+    if (migratedCount > 0) {
+        // නව දත්ත සුරක්ෂිත කරන්න
+        saveToBothStorage();
+        
+        // UI යාවත්කාලීන කරන්න
+        updateStats();
+        
+        // ප්‍රදර්ශන පණිවිඩයක් පෙන්වන්න
+        setTimeout(() => {
+            showNotification(`පැරණි බිල්පත් ${migratedCount}ක් sales ලෙස එකතු කරන ලදී`, 'success');
+        }, 1000);
+    }
+    
+    return migratedCount;
+}
+
+/**
+ * date string එකකින් month එක ලබා ගන්න
+ */
+function getMonthFromDate(dateString) {
+    if (!dateString) return new Date().getMonth();
+    
+    try {
+        // විවිධ date format වලට support දෙන්න
+        let dateObj;
+        
+        if (dateString.includes('/')) {
+            // Format: DD/MM/YYYY හෝ MM/DD/YYYY
+            const parts = dateString.split('/');
+            if (parts.length >= 2) {
+                // බොහෝවිට DD/MM/YYYY format එක
+                const monthPart = parts[1];
+                const month = parseInt(monthPart);
+                
+                if (!isNaN(month) && month >= 1 && month <= 12) {
+                    return month - 1; // 0-11 ලෙස
+                }
+            }
+        } else if (dateString.includes('-')) {
+            // Format: YYYY-MM-DD
+            dateObj = new Date(dateString);
+            if (!isNaN(dateObj.getTime())) {
+                return dateObj.getMonth();
+            }
+        }
+        
+        // අනෙකුත් format වලට
+        dateObj = new Date(dateString);
+        if (!isNaN(dateObj.getTime())) {
+            return dateObj.getMonth();
+        }
+    } catch (e) {
+        console.error("Error parsing date:", dateString, e);
+    }
+    
+    // කිසිදු ආකාරයකින් parse කරගත නොහැකි නම් වර්තමන් මාසය භාවිතා කරන්න
+    return new Date().getMonth();
+}
+
+/**
+ * සියලුම පැරණි දත්ත හැඩගැස්වීම (logs සහ sales)
+ */
+function migrateAllOldData() {
+    console.log("🔄 සියලුම පැරණි දත්ත හැඩගැස්වමින්...");
+    
+    let totalMigrated = 0;
+    
+    // 1. පැරණි logs වලින් sales ලබා ගන්න
+    const logsMigrated = migrateOldSalesFromLogs();
+    totalMigrated += logsMigrated;
+    
+    // 2. පැරණි sales array එක නව format එකට හැඩගස්සන්න
+    const salesMigrated = migrateExistingSales();
+    totalMigrated += salesMigrated;
+    
+    // 3. Update statistics
+    updateStats();
+    
+    // 4. දත්ත සුරක්ෂිත කරන්න
+    saveToBothStorage();
+    
+    console.log(`✅ සම්පූර්ණයෙන් ${totalMigrated} sales හැඩගස්වන ලදී`);
+    
+    if (totalMigrated > 0) {
+        showNotification(`සම්පූර්ණයෙන් ${totalMigrated} පැරණි බිල්පත් නව පද්ධතියට හැඩගස්වන ලදී`, 'success');
+        
+        // Reports පිටුව refresh කරන්න
+        if (document.getElementById('view-reports').style.display !== 'none') {
+            setTimeout(() => {
+                updateStats();
+            }, 500);
+        }
+    }
+    
+    return totalMigrated;
+}
+
+/**
+ * පැවති sales array එක නව format එකට හැඩගස්සන්න
+ */
+function migrateExistingSales() {
+    if (!sales || !Array.isArray(sales)) {
+        console.error("Sales array not found");
+        return 0;
+    }
+    
+    let migratedCount = 0;
+    
+    sales.forEach((sale, index) => {
+        if (!sale || typeof sale !== 'object') {
+            // වලංගු නොවන sale object එකක් නව object එකක් ලෙස සකසන්න
+            sales[index] = {
+                id: 'FIXED_' + Date.now() + '_' + index,
+                total: 0,
+                subtotal: 0,
+                discount: 0,
+                profit: 0,
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString(),
+                timestamp: Date.now() - (sales.length - index) * 86400000,
+                month: new Date().getMonth(),
+                itemsCount: 0,
+                items: [],
+                syncId: syncId
+            };
+            migratedCount++;
+            return;
+        }
+        
+        // අවශ්‍ය fields සියල්ල ඇත්දැයි පරීක්ෂා කරන්න
+        let needsMigration = false;
+        
+        // 1. id field එක
+        if (!sale.id) {
+            sale.id = 'SALE_' + (sale.timestamp || Date.now()) + '_' + index;
+            needsMigration = true;
+        }
+        
+        // 2. month field එක
+        if (sale.month === undefined || sale.month === null || isNaN(sale.month)) {
+            sale.month = getMonthFromDate(sale.date);
+            needsMigration = true;
+        }
+        
+        // 3. profit field එක
+        if (sale.profit === undefined || sale.profit === null || isNaN(sale.profit)) {
+            // Profit ගණනය කරන්න
+            if (sale.items && sale.items.length > 0) {
+                const totalCost = sale.items.reduce((sum, item) => {
+                    const itemCost = item.cost || 0;
+                    const itemWeight = item.weight || item.qty || 1;
+                    return sum + (itemCost * itemWeight);
+                }, 0);
+                sale.profit = (sale.total || sale.subtotal || 0) - totalCost;
+            } else {
+                sale.profit = (sale.total || sale.subtotal || 0) * 0.3; // 30% ලාභය ලෙස අනුමාන කරන්න
+            }
+            needsMigration = true;
+        }
+        
+        // 4. timestamp field එක
+        if (!sale.timestamp || typeof sale.timestamp !== 'number') {
+            sale.timestamp = Date.now() - (sales.length - index) * 86400000;
+            needsMigration = true;
+        }
+        
+        // 5. syncId field එක
+        if (!sale.syncId) {
+            sale.syncId = syncId;
+            needsMigration = true;
+        }
+        
+        // 6. itemsCount field එක
+        if (!sale.itemsCount && sale.items) {
+            sale.itemsCount = sale.items.length;
+            needsMigration = true;
+        }
+        
+        // 7. subtotal field එක
+        if (!sale.subtotal && sale.total) {
+            sale.subtotal = sale.total;
+            needsMigration = true;
+        }
+        
+        if (needsMigration) {
+            migratedCount++;
+        }
+    });
+    
+    console.log(`✅ ${migratedCount} existing sales migrated to new format`);
+    return migratedCount;
+}
+
+/**
+ * පැරණි දත්ත migration button එකක් reports පිටුවට එක් කරන්න
+ */
+function addMigrationButtonToReports() {
+    // Reports පිටුවේ ඇති බව පරීක්ෂා කරන්න
+    const reportsView = document.getElementById('view-reports');
+    if (!reportsView) return;
+    
+    // දැනටමත් button එකක් තිබේදැයි පරීක්ෂා කරන්න
+    if (document.getElementById('migrateOldDataBtn')) return;
+    
+    // Button එක සාදන්න
+    const migrateBtn = document.createElement('button');
+    migrateBtn.id = 'migrateOldDataBtn';
+    migrateBtn.innerHTML = '🔄 පැරණි බිල්පත් නව පද්ධතියට හැඩගස්සන්න';
+    migrateBtn.style.cssText = `
+        background: var(--orange);
+        color: black;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 13px;
+        margin: 15px auto;
+        display: block;
+        width: 90%;
+        max-width: 300px;
+        transition: all 0.3s;
+    `;
+    
+    // Hover effect
+    migrateBtn.onmouseover = function() {
+        this.style.transform = 'translateY(-2px)';
+        this.style.boxShadow = '0 5px 15px rgba(255, 159, 67, 0.3)';
+    };
+    
+    migrateBtn.onmouseout = function() {
+        this.style.transform = 'translateY(0)';
+        this.style.boxShadow = 'none';
+    };
+    
+    // Click event
+    migrateBtn.onclick = function() {
+        if (confirm('පැරණි බිල්පත් දත්ත සියල්ල නව පද්ධතියට හැඩගස්සන්නද?\n\nමෙම ක්‍රියාව නැවත ආපසු හැරවිය නොහැක.')) {
+            const migrated = migrateAllOldData();
+            if (migrated > 0) {
+                this.innerHTML = '✅ හැඩගස්වා ගන්නා ලදී!';
+                this.style.background = 'var(--neon-green)';
+                this.disabled = true;
+                
+                // පිටුව refresh කරන්න
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+            }
+        }
+    };
+    
+    // Reports පිටුවේ privacy wrapper එකට පසුව button එක එක් කරන්න
+    const reportWrapper = document.getElementById('reportPrivacyWrapper');
+    if (reportWrapper && reportWrapper.parentNode) {
+        reportWrapper.parentNode.insertBefore(migrateBtn, reportWrapper.nextSibling);
+    }
+}
+
+/**
+ * දත්ත migration status පරීක්ෂා කරන්න
+ */
+function checkMigrationStatus() {
+    console.log("🔍 දත්ත migration status පරීක්ෂා කරමින්...");
+    
+    if (!sales || !Array.isArray(sales)) {
+        console.error("Sales array not found");
+        return;
+    }
+    
+    // 1. පැරණි sales වලින් month field එක නැති ඒවා ගණන් කරන්න
+    const salesWithoutMonth = sales.filter(s => s.month === undefined || s.month === null || isNaN(s.month)).length;
+    const salesWithoutProfit = sales.filter(s => s.profit === undefined || s.profit === null || isNaN(s.profit)).length;
+    const salesWithoutId = sales.filter(s => !s.id).length;
+    
+    console.log(`Sales without month field: ${salesWithoutMonth}/${sales.length}`);
+    console.log(`Sales without profit field: ${salesWithoutProfit}/${sales.length}`);
+    console.log(`Sales without ID: ${salesWithoutId}/${sales.length}`);
+    
+    // 2. logs වලින් migration කළ හැකි sales ගණන
+    const migratableLogs = logs ? logs.filter(l => l.type === 'sale' && l.data).length : 0;
+    console.log(`Migratable sales in logs: ${migratableLogs}`);
+    
+    // 3. මාස අනුව sales ගණන
+    const salesByMonth = {};
+    sales.forEach(sale => {
+        const month = (sale.month !== undefined && !isNaN(sale.month)) ? 
+                     parseInt(sale.month) : new Date().getMonth();
+        
+        if (month < 0 || month > 11) return;
+        
+        if (!salesByMonth[month]) {
+            salesByMonth[month] = { count: 0, profit: 0, revenue: 0 };
+        }
+        
+        salesByMonth[month].count++;
+        salesByMonth[month].profit += parseFloat(sale.profit) || 0;
+        salesByMonth[month].revenue += parseFloat(sale.total) || parseFloat(sale.subtotal) || 0;
+    });
+    
+    console.log("Sales distribution by month:");
+    Object.keys(salesByMonth).sort((a,b) => parseInt(a)-parseInt(b)).forEach(month => {
+        const monthInt = parseInt(month);
+        console.log(`  Month ${monthInt+1}: ${salesByMonth[month].count} sales, 
+                     Revenue: Rs ${salesByMonth[month].revenue.toFixed(2)}, 
+                     Profit: Rs ${salesByMonth[month].profit.toFixed(2)}`);
+    });
+    
+    // Migration අවශ්‍යදැයි පරීක්ෂා කරන්න
+    const needsMigration = salesWithoutMonth > 0 || salesWithoutProfit > 0 || migratableLogs > 0;
+    
+    if (needsMigration) {
+        console.log("⚠️ දත්ත migration අවශ්‍යයි!");
+        
+        // Reports පිටුවට migration button එක් කරන්න
+        setTimeout(addMigrationButtonToReports, 1000);
+        
+        // පළමුව ඇතුල් වූ විට auto-migration කරන්න (පරිශීලක අවසරයෙන්)
+        if (!localStorage.getItem('jmart_auto_migrated')) {
+            setTimeout(() => {
+                if (confirm('පැරණි බිල්පත් දත්ත හමුවී ඇත. නව පද්ධතියට ස්වයංක්‍රීයව හැඩගස්සන්නද?')) {
+                    migrateAllOldData();
+                    localStorage.setItem('jmart_auto_migrated', 'true');
+                }
+            }, 2000);
+        }
+    } else {
+        console.log("✅ දත්ත migration අවශ්‍ය නැත");
+    }
+    
+    return needsMigration;
+}
+
+// -------------------------------------------------------------------------
+// Initialize migration system
+// -------------------------------------------------------------------------
+
+// පිටුව load වූ පසු migration system initialize කරන්න
+setTimeout(() => {
+    // 1. දත්ත migration status පරීක්ෂා කරන්න
+    checkMigrationStatus();
+    
+    // 2. පැරණි දත්ත auto-migrate කරන්න (පරිශීලක අවසරයෙන්)
+    if (!localStorage.getItem('jmart_auto_migrated')) {
+        console.log("🔄 පැරණි දත්ත auto-migration සකස් කරමින්...");
+        
+        // පරිශීලකට පණිවිඩයක් පෙන්වන්න
+        setTimeout(() => {
+            if (sales.length > 0 || (logs && logs.length > 0)) {
+                showNotification('පැරණි බිල්පත් දත්ත හමුවී ඇත. "P&L REPORTS" පිටුවේ migration button එක භාවිතා කරන්න.', 'info', 5000);
+            }
+        }, 3000);
+    }
+}, 2000);
+
+// -------------------------------------------------------------------------
+// Extended updateStats function to show migrated data
+// -------------------------------------------------------------------------
+const originalUpdateStats = updateStats;
+updateStats = function() {
+    // මුල් function එක ක්‍රියාත්මක කරන්න
+    originalUpdateStats.call(this);
+    
+    // Migration status පෙන්වන්න (debugging සඳහා)
+    if (sales && sales.length > 0) {
+        const salesWithMonth = sales.filter(s => s.month !== undefined && !isNaN(s.month)).length;
+        const salesWithProfit = sales.filter(s => s.profit !== undefined && !isNaN(s.profit)).length;
+        
+        // Console එකේ පෙන්වන්න
+        console.log(`📊 Migration Status: ${salesWithMonth}/${sales.length} sales with month, ${salesWithProfit}/${sales.length} sales with profit`);
+        
+        // Reports පිටුවේ අමතර තොරතුරු පෙන්වන්න
+        if (document.getElementById('view-reports').style.display !== 'none') {
+            const summaryText = document.getElementById('summaryText');
+            if (summaryText) {
+                const originalHTML = summaryText.innerHTML;
+                const migrationInfo = `<div style="font-size:11px; color:var(--text-dim); margin-top:10px;">
+                    Data: ${sales.length} sales | Migrated: ${salesWithMonth} with month data
+                </div>`;
+                summaryText.innerHTML = originalHTML + migrationInfo;
+            }
+        }
+    }
+};
+
+console.log("✅ පැරණි බිල්පත් දත්ත migration system සූදානම්");
 </script>
 </body>
 </html>
