@@ -27,7 +27,11 @@
             --text-dim: #94a3b8;
         }
 
-        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        * { 
+            box-sizing: border-box; 
+            font-family: 'Inter', sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+        }
         
         body { 
             margin: 0; 
@@ -48,7 +52,13 @@
             background-repeat: repeat; filter: blur(0.5px); z-index: -1;
         }
 
-        .glass { background: var(--glass-bg); backdrop-filter: blur(25px); border: 1px solid var(--glass-border); border-radius: 18px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); }
+        .glass { 
+            background: var(--glass-bg); 
+            backdrop-filter: blur(25px); 
+            border: 1px solid var(--glass-border); 
+            border-radius: 18px; 
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); 
+        }
         .privacy-blur { filter: blur(25px); pointer-events: none; transition: 0.5s; opacity: 0.3; }
 
         /* Responsive Header */
@@ -131,32 +141,6 @@
             display: flex; 
             flex-direction: column; 
             min-height: 400px;
-        }
-
-        /* Category Filter Buttons - POS පිටුවට */
-        .category-buttons {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 10px;
-            overflow-x: auto;
-            padding: 5px 0;
-        }
-        .cat-btn {
-            padding: 8px 15px;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--glass-border);
-            color: var(--text-dim);
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            white-space: nowrap;
-            min-width: fit-content;
-        }
-        .cat-btn.active {
-            background: var(--neon-blue);
-            color: black;
-            border-color: var(--neon-blue);
         }
 
         /* POS කාණ්ඩ කොටුව - වෙන් කළ පිටුව */
@@ -492,35 +476,6 @@
             touch-action: manipulation;
         }
 
-        /* Edit Button */
-        .edit-btn { 
-            background: none; 
-            border: none; 
-            cursor: pointer; 
-            font-size: 12px; 
-            margin-left: 5px; 
-            color: white;
-            -webkit-text-stroke: 1px white;
-            text-stroke: 1px white;
-            text-shadow: 
-                0 0 2px white,
-                0 0 4px rgba(255, 255, 255, 0.5);
-            opacity: 0.7;
-            transition: all 0.3s ease;
-            padding: 2px;
-            touch-action: manipulation;
-        }
-        .edit-btn:hover, .edit-btn:active { 
-            opacity: 1; 
-            color: var(--neon-blue);
-            -webkit-text-stroke: 1px var(--neon-blue);
-            text-stroke: 1px var(--neon-blue);
-            text-shadow: 
-                0 0 3px var(--neon-blue),
-                0 0 6px rgba(0, 242, 255, 0.5);
-            transform: scale(1.1);
-        }
-
         /* Lock/Unlock Button */
         #lockBtn { 
             display: flex; 
@@ -528,43 +483,6 @@
             gap: 5px; 
             white-space: nowrap;
             padding: 8px 15px;
-        }
-
-        /* Edit Item Modal */
-        .edit-item-modal { 
-            background: var(--glass-bg); 
-            border: 1px solid var(--glass-border); 
-            padding: 20px; 
-            border-radius: 20px; 
-            width: 100%; 
-            max-width: 400px; 
-            text-align: center;
-        }
-        .emoji-display {
-            font-size: 40px;
-            margin: 15px 0;
-            padding: 10px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .emoji-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            margin: 15px 0;
-            max-height: 200px;
-            overflow-y: auto;
-            padding: 10px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
-        }
-        
-        @media (max-width: 480px) {
-            .emoji-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
         }
 
         /* Game Styles - Responsive */
@@ -824,6 +742,176 @@
             .pos-category-box { padding: 8px; }
             .pos-cat-btn { padding: 6px 12px; font-size: 11px; }
         }
+        
+        /* Custom Scrollbar for Glass Theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background-clip: content-box;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background-clip: content-box;
+        }
+        
+        /* Stock Table Styles */
+        .stock-table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            margin-top: 15px;
+            position: relative;
+        }
+        
+        .stock-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            min-width: 800px;
+        }
+        
+        .stock-table th {
+            background: rgba(0,0,0,0.4);
+            padding: 14px 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid var(--glass-border);
+            color: var(--text-dim);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stock-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            vertical-align: middle;
+            height: 60px;
+        }
+        
+        .stock-table tr:hover {
+            background: rgba(255,255,255,0.03);
+        }
+        
+        .stock-actions {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .action-btn {
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            border: none;
+            font-weight: 600;
+            transition: all 0.2s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .edit-btn-stock {
+            background: rgba(0, 242, 255, 0.15);
+            color: var(--neon-blue);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+        }
+        
+        .delete-btn-stock {
+            background: rgba(255, 71, 71, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(255, 71, 71, 0.3);
+        }
+        
+        .restock-btn-stock {
+            background: rgba(138, 255, 103, 0.15);
+            color: var(--neon-green);
+            border: 1px solid rgba(138, 255, 103, 0.3);
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .stock-qty {
+            font-family: 'JetBrains Mono';
+            font-weight: 600;
+            font-size: 13px;
+        }
+        
+        .out-of-stock {
+            color: var(--danger);
+        }
+        
+        .low-stock {
+            color: var(--orange);
+        }
+        
+        .in-stock {
+            color: var(--neon-green);
+        }
+        
+        .emoji-cell {
+            font-size: 24px;
+            text-align: center;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin-right: 10px;
+        }
+        
+        /* Stock Table Row Layout */
+        .stock-item-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .stock-item-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stock-item-name {
+            font-weight: 600;
+            font-size: 13px;
+        }
+        
+        .stock-item-barcode {
+            font-size: 10px;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono';
+        }
+        
+        /* Stock Category Badge */
+        .stock-category-badge {
+            padding: 4px 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+            font-size: 11px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
     </style>
 </head>
 <body>
@@ -901,10 +989,10 @@
     </main>
 </div>
 
-<!-- Stock Control View -->
+<!-- Stock Control View - UPDATED -->
 <div id="view-stock" style="display: none; padding: 20px; overflow-y: auto;">
-    <div style="max-width: 1000px; margin: auto;">
-        <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+    <div style="max-width: 1400px; margin: auto; width: 100%;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
             <div class="glass" style="padding: 20px;">
                 <div style="font-weight: 800; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
                     <span>STOCK UPDATE</span>
@@ -946,7 +1034,42 @@
             </div>
         </div>
 
-        <div class="glass" style="margin-top: 20px; padding: 20px;">
+        <!-- Stock Items Table with CRUD Operations -->
+        <div class="glass" style="padding: 20px; margin-bottom: 20px;">
+            <div style="font-weight: 800; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                <span>ALL STOCK ITEMS</span>
+                <div style="display: flex; gap: 10px;">
+                    <button class="nav-link" onclick="refreshStockTable()" style="padding: 5px 10px; font-size: 11px;">🔄 Refresh</button>
+                    <button class="nav-link" onclick="exportStockData()" style="padding: 5px 10px; font-size: 11px;">📊 Export</button>
+                </div>
+            </div>
+            
+            <div class="stock-table-container">
+                <table class="stock-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th style="min-width: 200px;">Item</th>
+                            <th style="min-width: 100px;">Category</th>
+                            <th style="min-width: 100px;">Stock (kg)</th>
+                            <th style="min-width: 100px;">Cost Price</th>
+                            <th style="min-width: 100px;">Selling Price</th>
+                            <th style="min-width: 120px;">Barcode</th>
+                            <th style="min-width: 100px;">Value</th>
+                            <th style="min-width: 200px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stockTableBody">
+                        <!-- Stock items will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="stockTableEmpty" style="text-align: center; padding: 40px; color: var(--text-dim); display: none;">
+                No stock items found. Add items using the form above.
+            </div>
+        </div>
+
+        <div class="glass" style="padding: 20px;">
             <div style="font-weight: 800; border-bottom: 1px solid #333; padding-bottom: 10px;">RECENT ACTIVITY</div>
             <div class="history-list" id="historyLog"></div>
         </div>
@@ -1075,35 +1198,70 @@
     </div>
 </div>
 
-<div class="modal" id="editItemModal">
+<!-- Stock Item Edit Modal -->
+<div class="modal" id="stockEditModal">
     <div class="glass-popup">
-        <div class="popup-title" id="editItemTitle">Edit Item</div>
-        <div class="popup-sub" id="editItemSub">Change emoji and price</div>
+        <div class="popup-title" id="stockEditTitle">Edit Stock Item</div>
+        <div class="popup-sub" id="stockEditSub">Update item details</div>
         
-        <div class="emoji-display" id="currentEmojiDisplay" onclick="toggleEmojiPicker()">🍎</div>
-        
-        <div id="emojiPicker" style="display: none;">
-            <div style="display: flex; justify-content: center; gap: 10px; margin: 15px 0;">
-                <button class="cat-btn" onclick="switchEmojiCategory('fruits')">🍎 Fruits</button>
-                <button class="cat-btn" onclick="switchEmojiCategory('vegetables')">🥦 Vegetables</button>
-                <button class="cat-btn" onclick="switchEmojiCategory('other')">📦 Other</button>
+        <div style="text-align: left; margin: 20px 0;">
+            <div style="margin-bottom: 15px;">
+                <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 5px;">Item Name:</div>
+                <input type="text" id="stockEditName" class="popup-input" style="text-align: left; font-size: 14px;">
             </div>
             
-            <div class="emoji-grid" id="emojiGrid"></div>
-        </div>
-        
-        <div style="margin: 20px 0;">
-            <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 5px;">New Selling Price (Rs):</div>
-            <input type="number" id="editItemPrice" class="popup-input" placeholder="0.00" step="0.01" style="font-size: 18px; padding: 12px;">
+            <div style="margin-bottom: 15px;">
+                <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 5px;">Category:</div>
+                <select id="stockEditCategory" class="popup-input" style="text-align: left; font-size: 14px;">
+                    <option value="Fruit">Fruit</option>
+                    <option value="Vegetable">Vegetable</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div>
+                    <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 5px;">Cost Price (Rs):</div>
+                    <input type="number" id="stockEditCost" class="popup-input" step="0.01" style="font-size: 14px;">
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 5px;">Selling Price (Rs):</div>
+                    <input type="number" id="stockEditPrice" class="popup-input" step="0.01" style="font-size: 14px;">
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 5px;">Current Stock (kg):</div>
+                <input type="number" id="stockEditQty" class="popup-input" step="0.001" style="font-size: 14px;">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 5px;">Barcode:</div>
+                <input type="text" id="stockEditBarcode" class="popup-input" style="font-size: 14px;">
+            </div>
+            
+            <div style="margin-bottom: 15px; text-align: center;">
+                <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 5px;">Emoji:</div>
+                <div class="emoji-display" id="stockEmojiDisplay" onclick="toggleStockEmojiPicker()">🍎</div>
+                <div id="stockEmojiPicker" style="display: none;">
+                    <div style="display: flex; justify-content: center; gap: 10px; margin: 15px 0;">
+                        <button class="cat-btn" onclick="switchStockEmojiCategory('fruits')">🍎 Fruits</button>
+                        <button class="cat-btn" onclick="switchStockEmojiCategory('vegetables')">🥦 Vegetables</button>
+                        <button class="cat-btn" onclick="switchStockEmojiCategory('other')">📦 Other</button>
+                    </div>
+                    <div class="emoji-grid" id="stockEmojiGrid"></div>
+                </div>
+            </div>
         </div>
         
         <div class="popup-btn-grid">
-            <button class="btn-action btn-cancel" onclick="closeEditModal()">CANCEL</button>
-            <button class="btn-action btn-pay" onclick="saveItemEdit()">SAVE CHANGES</button>
+            <button class="btn-action btn-cancel" onclick="closeStockEditModal()">CANCEL</button>
+            <button class="btn-action btn-pay" onclick="saveStockItemEdit()">SAVE CHANGES</button>
         </div>
     </div>
 </div>
 
+<!-- Edit Pin Modal -->
 <div class="modal" id="editPinModal">
     <div class="glass-popup">
         <div class="popup-title">EDIT LOCKED</div>
@@ -1116,6 +1274,7 @@
     </div>
 </div>
 
+<!-- Player Name Modal -->
 <div class="modal" id="playerNameModal">
     <div class="glass-popup">
         <div class="popup-title">ENTER PLAYER NAME</div>
@@ -1321,7 +1480,7 @@
     }
 
     // -------------------------------------------------------------------------
-    // POS පිටුවේ අයිතම පෙරීම
+    // POS පිටුවේ අයිතම පෙරීම (පැන්සල අයිකනය ඉවත් කරපු)
     // -------------------------------------------------------------------------
     function renderItems() {
         const grid = document.getElementById('itemGrid');
@@ -1350,14 +1509,12 @@
                 card.className = 'item-card glass';
                 card.innerHTML = `
                     <span class="stock-badge">${parseFloat(item.qty).toFixed(2)}kg</span>
-                    <div style="font-size:30px;">${item.emoji || '🍎'}</div>
-                    <b>${item.name}</b>
-                    <br>
-                    <small>
-                        Rs ${item.price}
-                        <button class="edit-btn" onclick="openEditItemModal('${item.name}')" title="Edit item">✏️</button>
-                    </small>
-                    ${item.barcode ? `<br><small style="font-size:9px;color:var(--text-dim)">${item.barcode}</small>` : ''}
+                    <div style="font-size:30px; margin-bottom: 8px;">${item.emoji || '🍎'}</div>
+                    <b style="font-size: 13px; margin-bottom: 4px;">${item.name}</b>
+                    <div style="font-size: 12px; color: var(--neon-green);">
+                        Rs ${parseFloat(item.price).toFixed(2)}
+                    </div>
+                    ${item.barcode ? `<div style="font-size:9px;color:var(--text-dim); margin-top: 4px;">${item.barcode}</div>` : ''}
                 `;
                 card.onclick = () => addToCart(item);
                 grid.appendChild(card);
@@ -1445,7 +1602,7 @@
         addLog(`Sale completed: Rs ${total.toFixed(2)}${currentDiscount > 0 ? ` [Discount: Rs ${currentDiscount.toFixed(2)}]` : ''}`, 'sale', saleRecord);
         
         // Show receipt
-        showReceipt(itemsForLog, total, currentDiscount, saleRecord.time);
+        showReceipt(itemsForLog, total, currentDiscount, saleRecord.time, currentCustomerInfo);
         
         // Clear cart and reset
         cart = []; 
@@ -1502,12 +1659,30 @@
     }
 
     function viewOldBill(logId) {
-        let log = logs.find(x => x.id === logId);
-        if(!log || !log.data) return;
-        showReceipt(log.data.items, log.data.total, log.data.discount || 0, log.data.time);
+        // First check if the log exists
+        let log = logs.find(x => x.id.toString() === logId.toString());
+        
+        if(!log || !log.data) {
+            showNotification("Sale details not found", "error");
+            return;
+        }
+        
+        // Extract sale data
+        const saleData = log.data;
+        const items = saleData.items || [];
+        const total = saleData.total || 0;
+        const discount = saleData.discount || 0;
+        const time = saleData.time || log.time;
+        const saleId = saleData.id || logId;
+        
+        // Show receipt with all details
+        showReceipt(items, total, discount, time, saleData.customer || null);
+        
+        // Also add a log entry about viewing this old bill
+        addLog(`Viewed old sale: ${saleId}`, 'info');
     }
 
-    function showReceipt(items, total, discount, time) {
+    function showReceipt(items, total, discount, time, customer = null) {
         let html = `
             <div style="text-align:center">
                 <h3>JAYANETH PRO MART</h3>
@@ -1515,33 +1690,58 @@
                 <hr>
             </div>`;
         
-        items.forEach(i => {
-            html += `<div style="display:flex; justify-content:space-between">
-                <span>${i.name} (${i.weight.toFixed(3)}kg)</span>
-                <span>Rs ${i.rowTotal.toFixed(2)}</span>
-            </div>`;
-        });
+        // Add customer info if available
+        if (customer && customer.name) {
+            html += `
+                <div style="margin-bottom: 15px; padding: 10px; background: #f5f5f5; border-radius: 5px;">
+                    <div style="font-weight: 600; margin-bottom: 5px;">Customer Information:</div>
+                    <div>Name: ${customer.name}</div>
+                    ${customer.phone ? `<div>Phone: ${customer.phone}</div>` : ''}
+                    ${customer.email ? `<div>Email: ${customer.email}</div>` : ''}
+                </div>
+            `;
+        }
         
-        html += `<hr>`;
+        if (items.length === 0) {
+            html += `<p style="text-align:center; color: #666;">No items in this sale</p>`;
+        } else {
+            items.forEach(i => {
+                html += `<div style="display:flex; justify-content:space-between; margin-bottom: 5px;">
+                    <span>${i.name} (${parseFloat(i.weight || 0).toFixed(3)}kg)</span>
+                    <span>Rs ${parseFloat(i.rowTotal || 0).toFixed(2)}</span>
+                </div>`;
+            });
+        }
         
-        const subtotal = items.reduce((sum, i) => sum + i.rowTotal, 0);
+        html += `<hr style="margin: 15px 0;">`;
+        
+        const subtotal = items.reduce((sum, i) => sum + (i.rowTotal || 0), 0);
+        
         if (discount > 0) {
-            html += `<div style="display:flex; justify-content:space-between">
+            html += `<div style="display:flex; justify-content:space-between; margin-bottom: 5px;">
                 <span>Subtotal</span>
                 <span>Rs ${subtotal.toFixed(2)}</span>
             </div>`;
-            html += `<div style="display:flex; justify-content:space-between; color:red;">
+            html += `<div style="display:flex; justify-content:space-between; margin-bottom: 10px; color:red;">
                 <span>Discount</span>
-                <span>-Rs ${discount.toFixed(2)}</span>
+                <span>-Rs ${parseFloat(discount).toFixed(2)}</span>
             </div>`;
         }
         
-        html += `<div style="display:flex; justify-content:space-between; font-weight:800">
+        html += `<div style="display:flex; justify-content:space-between; font-weight:800; font-size: 16px; margin-top: 10px;">
             <span>TOTAL</span>
-            <span>Rs ${total.toFixed(2)}</span>
+            <span>Rs ${parseFloat(total).toFixed(2)}</span>
         </div>`;
         
-        html += `<p style="text-align:center; font-size:10px; margin-top:15px;">Thank You! Come Again.</p>`;
+        // Add payment method if available
+        if (items.length > 0) {
+            html += `<div style="margin-top: 10px; font-size: 11px; color: #666;">
+                <div>Payment: Cash</div>
+                <div>Items: ${items.length}</div>
+            </div>`;
+        }
+        
+        html += `<p style="text-align:center; font-size:10px; margin-top:15px; color: #666;">Thank You! Come Again.</p>`;
         
         document.getElementById('billArea').innerHTML = html;
         document.getElementById('modal').style.display = 'flex';
@@ -1732,6 +1932,9 @@
                 `<option value="${i.name}">${i.name} (${parseFloat(i.qty).toFixed(2)}kg)</option>`
             ).join('');
         }
+        
+        // Refresh stock table
+        loadStockTable();
     }
 
     // -------------------------------------------------------------------------
@@ -1820,6 +2023,8 @@
             ).join('');
             // Update the item select dropdown
             updateItemSelectDropdown();
+            // Load stock table
+            loadStockTable();
         } else if (t === 'game') {
             // Initialize game when switching to game tab
             setTimeout(initGame, 100);
@@ -2020,11 +2225,92 @@
     }
 
     // -------------------------------------------------------------------------
-    // Item editing functions
+    // Stock Table Management Functions
     // -------------------------------------------------------------------------
-    function openEditItemModal(itemName) {
+    function refreshStockTable() {
+        loadStockTable();
+        showNotification("Stock table refreshed", "success");
+    }
+
+    function loadStockTable() {
+        const tableBody = document.getElementById('stockTableBody');
+        const emptyMessage = document.getElementById('stockTableEmpty');
+        
+        if (!db.length) {
+            tableBody.innerHTML = '';
+            emptyMessage.style.display = 'block';
+            return;
+        }
+        
+        emptyMessage.style.display = 'none';
+        
+        // Sort items by category and name
+        const sortedItems = [...db].sort((a, b) => {
+            if (a.category !== b.category) {
+                return a.category.localeCompare(b.category);
+            }
+            return a.name.localeCompare(b.name);
+        });
+        
+        tableBody.innerHTML = sortedItems.map((item, index) => {
+            const stockValue = parseFloat(item.qty) * parseFloat(item.cost);
+            const stockClass = parseFloat(item.qty) <= 0 ? 'out-of-stock' : 
+                             parseFloat(item.qty) < 5 ? 'low-stock' : 'in-stock';
+            
+            return `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>
+                        <div class="stock-item-row">
+                            <div class="emoji-cell">
+                                ${item.emoji || '📦'}
+                            </div>
+                            <div class="stock-item-info">
+                                <div class="stock-item-name">${item.name}</div>
+                                <div class="stock-item-barcode">${item.barcode || 'No barcode'}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="stock-category-badge">
+                            ${item.category || 'Other'}
+                        </span>
+                    </td>
+                    <td class="stock-qty ${stockClass}">
+                        ${parseFloat(item.qty).toFixed(2)} kg
+                    </td>
+                    <td style="font-family: 'JetBrains Mono';">Rs ${parseFloat(item.cost).toFixed(2)}</td>
+                    <td style="font-family: 'JetBrains Mono'; color: var(--neon-green);">Rs ${parseFloat(item.price).toFixed(2)}</td>
+                    <td>
+                        <div style="font-family: 'JetBrains Mono'; font-size: 11px; color: var(--text-dim);">
+                            ${item.barcode || 'No barcode'}
+                        </div>
+                    </td>
+                    <td style="font-family: 'JetBrains Mono'; font-weight: 600;">Rs ${stockValue.toFixed(2)}</td>
+                    <td>
+                        <div class="stock-actions">
+                            <button class="action-btn edit-btn-stock" onclick="editStockItem('${item.name}')" title="Edit item">
+                                ✏️ Edit
+                            </button>
+                            <button class="action-btn delete-btn-stock" onclick="deleteStockItem('${item.name}')" title="Delete item">
+                                🗑️ Delete
+                            </button>
+                            <button class="action-btn restock-btn-stock" onclick="restockItem('${item.name}')" title="Add stock">
+                                📦 Restock
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function editStockItem(itemName) {
         const item = db.find(i => i.name === itemName);
-        if (!item) return;
+        if (!item) {
+            showNotification("Item not found", "error");
+            return;
+        }
         
         // Check if system is locked
         if (isLocked) {
@@ -2032,18 +2318,25 @@
             document.getElementById('editPinInput').value = "";
             document.getElementById('editPinModal').style.display = 'flex';
             document.getElementById('editPinInput').focus();
+            
+            // Customize the modal for editing
+            document.getElementById('editPinModal').querySelector('.popup-title').textContent = "EDIT LOCKED";
+            document.getElementById('editPinModal').querySelector('.popup-sub').textContent = `Enter PIN 8514 to edit "${itemName}"`;
+            
+            // Override the verify function for editing
+            const verifyBtn = document.getElementById('editPinModal').querySelector('.btn-pay');
+            verifyBtn.onclick = verifyStockEditPin;
         } else {
-            // System already unlocked, proceed directly
-            setupEditModal(item);
+            openStockItemEditModal(itemName);
         }
     }
 
-    function verifyEditPin() {
+    function verifyStockEditPin() {
         let pin = document.getElementById('editPinInput').value;
         if (pin === "8514") {
             closeModal('editPinModal');
             if (itemToEdit) {
-                setupEditModal(itemToEdit);
+                openStockItemEditModal(itemToEdit.name);
             }
         } else {
             showNotification('Incorrect PIN', 'error');
@@ -2051,92 +2344,286 @@
         }
     }
 
-    function setupEditModal(item) {
+    function openStockItemEditModal(itemName) {
+        const item = db.find(i => i.name === itemName);
+        if (!item) {
+            showNotification("Item not found", "error");
+            return;
+        }
+        
         itemToEdit = item;
         selectedEmoji = item.emoji || '🍎';
         currentEmojiCategory = 'fruits';
         
-        document.getElementById('editItemTitle').innerText = `Edit ${item.name}`;
-        document.getElementById('editItemSub').innerText = `Current price: Rs ${item.price}`;
-        document.getElementById('currentEmojiDisplay').innerText = selectedEmoji;
-        document.getElementById('editItemPrice').value = item.price;
+        // Fill the form
+        document.getElementById('stockEditTitle').textContent = `Edit ${item.name}`;
+        document.getElementById('stockEditSub').textContent = `Update item details`;
+        document.getElementById('stockEditName').value = item.name;
+        document.getElementById('stockEditCategory').value = item.category || 'Fruit';
+        document.getElementById('stockEditCost').value = item.cost;
+        document.getElementById('stockEditPrice').value = item.price;
+        document.getElementById('stockEditQty').value = parseFloat(item.qty);
+        document.getElementById('stockEditBarcode').value = item.barcode || '';
+        document.getElementById('stockEmojiDisplay').textContent = selectedEmoji;
         
-        // Load fruits emojis by default
-        loadEmojiGrid('fruits');
+        // Load emoji grid
+        loadStockEmojiGrid(currentEmojiCategory);
         
-        document.getElementById('editItemModal').style.display = 'flex';
-        document.getElementById('editItemPrice').focus();
+        // Show modal
+        document.getElementById('stockEditModal').style.display = 'flex';
+        document.getElementById('stockEditName').focus();
     }
 
-    function toggleEmojiPicker() {
-        const picker = document.getElementById('emojiPicker');
+    function toggleStockEmojiPicker() {
+        const picker = document.getElementById('stockEmojiPicker');
         if (picker.style.display === 'none') {
             picker.style.display = 'block';
-            loadEmojiGrid(currentEmojiCategory);
+            loadStockEmojiGrid(currentEmojiCategory);
         } else {
             picker.style.display = 'none';
         }
     }
 
-    function switchEmojiCategory(category) {
+    function switchStockEmojiCategory(category) {
         currentEmojiCategory = category;
-        loadEmojiGrid(category);
+        loadStockEmojiGrid(category);
     }
 
-    function loadEmojiGrid(category) {
-        const emojiGrid = document.getElementById('emojiGrid');
+    function loadStockEmojiGrid(category) {
+        const emojiGrid = document.getElementById('stockEmojiGrid');
         emojiGrid.innerHTML = '';
         
         const emojis = emojiPacks[category] || emojiPacks.fruits;
         
         emojis.forEach(emoji => {
             const emojiOption = document.createElement('div');
-            emojiOption.className = `emoji-option ${emoji === selectedEmoji ? 'selected' : ''}`;
+            emojiOption.style.cssText = `
+                font-size: 24px;
+                padding: 8px;
+                cursor: pointer;
+                border-radius: 6px;
+                text-align: center;
+                transition: all 0.2s;
+                background: ${emoji === selectedEmoji ? 'rgba(0, 242, 255, 0.2)' : 'transparent'};
+                border: ${emoji === selectedEmoji ? '1px solid var(--neon-blue)' : '1px solid transparent'};
+            `;
             emojiOption.innerText = emoji;
-            emojiOption.onclick = () => selectEmoji(emoji);
+            emojiOption.onclick = () => selectStockEmoji(emoji);
             emojiGrid.appendChild(emojiOption);
         });
     }
 
-    function selectEmoji(emoji) {
+    function selectStockEmoji(emoji) {
         selectedEmoji = emoji;
-        document.getElementById('currentEmojiDisplay').innerText = emoji;
+        document.getElementById('stockEmojiDisplay').innerText = emoji;
         
         // Update selection in grid
-        document.querySelectorAll('.emoji-option').forEach(opt => {
-            opt.classList.remove('selected');
-            if (opt.innerText === emoji) {
-                opt.classList.add('selected');
-            }
+        document.querySelectorAll('#stockEmojiGrid > div').forEach(opt => {
+            opt.style.background = opt.innerText === emoji ? 'rgba(0, 242, 255, 0.2)' : 'transparent';
+            opt.style.border = opt.innerText === emoji ? '1px solid var(--neon-blue)' : '1px solid transparent';
         });
     }
 
-    function saveItemEdit() {
+    function saveStockItemEdit() {
         if (!itemToEdit) return;
         
-        const newPrice = parseFloat(document.getElementById('editItemPrice').value);
-        if (isNaN(newPrice) || newPrice <= 0) {
-            showNotification("Please enter a valid price", "error");
+        const newName = document.getElementById('stockEditName').value.trim();
+        const newCost = parseFloat(document.getElementById('stockEditCost').value);
+        const newPrice = parseFloat(document.getElementById('stockEditPrice').value);
+        const newQty = parseFloat(document.getElementById('stockEditQty').value);
+        const newBarcode = document.getElementById('stockEditBarcode').value.trim();
+        const newCategory = document.getElementById('stockEditCategory').value;
+        
+        // Validation
+        if (!newName) {
+            showNotification("Item name cannot be empty", "error");
             return;
         }
         
+        if (isNaN(newCost) || newCost <= 0) {
+            showNotification("Please enter a valid cost price", "error");
+            return;
+        }
+        
+        if (isNaN(newPrice) || newPrice <= 0) {
+            showNotification("Please enter a valid selling price", "error");
+            return;
+        }
+        
+        if (isNaN(newQty) || newQty < 0) {
+            showNotification("Please enter a valid quantity", "error");
+            return;
+        }
+        
+        // Check if name already exists (if changed)
+        if (newName !== itemToEdit.name) {
+            const existingItem = db.find(i => i.name.toLowerCase() === newName.toLowerCase() && i !== itemToEdit);
+            if (existingItem) {
+                showNotification(`Item "${newName}" already exists`, "error");
+                return;
+            }
+        }
+        
         // Update item
-        itemToEdit.emoji = selectedEmoji;
+        itemToEdit.name = newName;
+        itemToEdit.cost = newCost;
         itemToEdit.price = newPrice;
+        itemToEdit.qty = newQty.toFixed(3);
+        itemToEdit.barcode = newBarcode || null;
+        itemToEdit.category = newCategory;
+        itemToEdit.emoji = selectedEmoji;
+        
+        // Update sold out items set
+        if (newQty <= 0) {
+            soldOutItems.add(newName);
+        } else {
+            soldOutItems.delete(itemToEdit.name);
+        }
         
         // Save to both storage systems
         saveToBothStorage();
         
+        // Update UI
+        loadStockTable();
         renderItems();
-        closeEditModal();
-        showNotification(`${itemToEdit.name} updated: ${selectedEmoji} Rs ${newPrice}`, 'success');
+        updateItemSelectDropdown();
+        
+        closeStockEditModal();
+        showNotification(`${newName} updated successfully`, "success");
         itemToEdit = null;
     }
 
-    function closeEditModal() {
-        document.getElementById('editItemModal').style.display = 'none';
-        document.getElementById('emojiPicker').style.display = 'none';
+    function closeStockEditModal() {
+        document.getElementById('stockEditModal').style.display = 'none';
+        document.getElementById('stockEmojiPicker').style.display = 'none';
         itemToEdit = null;
+    }
+
+    function deleteStockItem(itemName) {
+        const item = db.find(i => i.name === itemName);
+        if (!item) {
+            showNotification("Item not found", "error");
+            return;
+        }
+        
+        // Check if system is locked
+        if (isLocked) {
+            itemToEdit = item;
+            document.getElementById('editPinInput').value = "";
+            document.getElementById('editPinModal').style.display = 'flex';
+            document.getElementById('editPinInput').focus();
+            
+            // Customize the modal for deletion
+            document.getElementById('editPinModal').querySelector('.popup-title').textContent = "CONFIRM DELETION";
+            document.getElementById('editPinModal').querySelector('.popup-sub').textContent = `Enter PIN 8514 to delete "${itemName}"`;
+            
+            // Override the verify function for deletion
+            const verifyBtn = document.getElementById('editPinModal').querySelector('.btn-pay');
+            verifyBtn.onclick = verifyDeletePin;
+        } else {
+            confirmDeleteItem(itemName);
+        }
+    }
+
+    function verifyDeletePin() {
+        let pin = document.getElementById('editPinInput').value;
+        if (pin === "8514") {
+            closeModal('editPinModal');
+            if (itemToEdit) {
+                confirmDeleteItem(itemToEdit.name);
+            }
+        } else {
+            showNotification('Incorrect PIN', 'error');
+            closeModal('editPinModal');
+        }
+    }
+
+    function confirmDeleteItem(itemName) {
+        const item = db.find(i => i.name === itemName);
+        if (!item) {
+            showNotification("Item not found", "error");
+            return;
+        }
+        
+        // Check if item is in any sales
+        const itemInSales = sales.some(sale => 
+            sale.items && sale.items.some(item => item.name === itemName)
+        );
+        
+        let confirmMessage = `Are you sure you want to delete "${itemName}"?`;
+        if (itemInSales) {
+            confirmMessage += "\n\n⚠️ This item has sales history. Deleting it may affect reports.";
+        }
+        
+        if (confirm(confirmMessage)) {
+            // Remove from database
+            const index = db.findIndex(i => i.name === itemName);
+            if (index !== -1) {
+                db.splice(index, 1);
+            }
+            
+            // Remove from sold out items
+            soldOutItems.delete(itemName);
+            
+            // Save to both storage systems
+            saveToBothStorage();
+            
+            // Update UI
+            loadStockTable();
+            renderItems();
+            updateItemSelectDropdown();
+            
+            showNotification(`"${itemName}" deleted successfully`, "success");
+        }
+    }
+
+    function restockItem(itemName) {
+        const item = db.find(i => i.name === itemName);
+        if (!item) {
+            showNotification("Item not found", "error");
+            return;
+        }
+        
+        // Auto-fill the stock form for restocking
+        document.getElementById('stType').value = 'in';
+        toggleStockMode();
+        
+        // Auto-select the item
+        document.getElementById('stSelectName').value = itemName;
+        handleItemSelect();
+        
+        // Focus on quantity field
+        document.getElementById('stQty').focus();
+        
+        showNotification(`Ready to restock ${itemName}`, "info");
+        
+        // Scroll to the stock update form
+        document.getElementById('stQty').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function exportStockData() {
+        if (!db.length) {
+            showNotification("No stock data to export", "warning");
+            return;
+        }
+        
+        const csvContent = "data:text/csv;charset=utf-8,"
+            + ["Name,Category,Stock (kg),Cost Price,Selling Price,Barcode,Value"].concat(
+                db.map(item => {
+                    const value = parseFloat(item.qty) * parseFloat(item.cost);
+                    return `"${item.name}","${item.category || 'Other'}",${parseFloat(item.qty).toFixed(3)},${parseFloat(item.cost).toFixed(2)},${parseFloat(item.price).toFixed(2)},"${item.barcode || ''}",${value.toFixed(2)}`;
+                })
+            ).join("\n");
+        
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `jayeneth_stock_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showNotification("Stock data exported as CSV", "success");
     }
 
     // -------------------------------------------------------------------------
@@ -2753,6 +3240,9 @@
             // Update the item select dropdown
             updateItemSelectDropdown();
             
+            // Load stock table
+            loadStockTable();
+            
             // Show welcome message
             setTimeout(() => {
                 showNotification('Jayaneth Pro Mart POS Ready');
@@ -2771,6 +3261,7 @@
             renderLogs();
             updateCartUI();
             updateItemSelectDropdown();
+            loadStockTable();
             
             showNotification('📱 Local data loaded', 'info');
         });
