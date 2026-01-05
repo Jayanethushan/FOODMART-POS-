@@ -1334,59 +1334,9 @@
         measurementId: "G-CGRK6HPBLX"
     };
 
- // 1. Firebase ආරම්භ කිරීම
- firebase.initializeApp(firebaseConfig);
-
-// 2. Offline Persistence සක්‍රීය කිරීම
-firebase.database().enablePersistence()
-.then(() => {
-    console.log("Offline Persistence Active ✅");
-})
-.catch((err) => {
-    console.error("Persistence error:", err.code);
-});
-
-// 3. Database එක සම්බන්ධ කිරීම
-const database = firebase.database();
-
-// 4. Online/Offline status නිරීක්ෂණය සහ Sync කිරීම
-var connectedRef = firebase.database().ref(".info/connected");
-connectedRef.on("value", function(snap) {
-  if (snap.val() === true) {
-    showNotification("System Online - Syncing Data ✅");
-    
-    // LocalStorage එකේ තියෙන offline විකුණුම් Sync කිරීම
-    let offlineSales = JSON.parse(localStorage.getItem('offline_sales') || '[]');
-    if(offlineSales.length > 0) {
-        offlineSales.forEach(sale => {
-            database.ref('sales').push(sale);
-        });
-        localStorage.removeItem('offline_sales');
-        showNotification("Offline sales synced! 🚀");
-    }
-  } else {
-    showNotification("System Offline - Saving Locally 💾");
-  }
-});
-
-// Offline දත්ත ගබඩා කිරීමේ function එක
-function saveSaleOffline(saleData) {
-    let offlineSales = JSON.parse(localStorage.getItem('offline_sales') || '[]');
-    offlineSales.push(saleData);
-    localStorage.setItem('offline_sales', JSON.stringify(offlineSales));
-}
-    
-    // දත්ත sync වන ආකාරය නිරීක්ෂණය කිරීමට (Online/Offline status)
-    var connectedRef = firebase.database().ref(".info/connected");
-    connectedRef.on("value", function(snap) {
-      if (snap.val() === true) {
-        console.log("Status: Online - Syncing data...");
-        showNotification("System Online - Syncing Data ✅");
-      } else {
-        console.log("Status: Offline - Saving data locally...");
-        showNotification("System Offline - Saving Locally 💾");
-      }
-    });
+    // Firebase ආරම්භ කිරීම
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
     // Offline දත්ත ගබඩා කිරීමට
 function saveSaleOffline(saleData) {
@@ -1682,31 +1632,6 @@ window.addEventListener('online', () => {
         };
 
         sales.push(saleRecord);
-        
-        // විකුණුම් සිදු කරන විට Firebase වලට අනිවාර්යයෙන් දත්ත යැවීම
-        const saleData = {
-            items: cart,
-            total: total,
-            subtotal: subtotal,
-            discount: currentDiscount,
-            profit: total - cost,
-            timestamp: firebase.database.ServerValue.TIMESTAMP, // කාලය නිවැරදිව තබා ගැනීමට
-            customer: currentCustomerInfo,
-            syncId: syncId
-        };
-
-        // Firebase වලට push කිරීම (Offline නම් මෙය queue එකක රැඳේ)
-        database.ref('sales').push(saleData)
-        .then(() => {
-            console.log("Sale recorded successfully to Firebase!");
-            // Local Backup එකකුත් තබා ගන්න
-            localStorage.setItem('last_sale', JSON.stringify(saleData));
-        })
-        .catch((error) => {
-            console.error("Firebase Error: ", error);
-            // If Firebase fails, save to offline storage
-            saveSaleOffline(saleData);
-        });
         
         addLog(`Sale completed: Rs ${total.toFixed(2)}${currentDiscount > 0 ? ` [Discount: Rs ${currentDiscount.toFixed(2)}]` : ''}`, 'sale', saleRecord);
         
@@ -2230,7 +2155,7 @@ window.addEventListener('online', () => {
     }
 
     function applyDiscount() {
-        const discountInput = document.getElementById('discountInput').value;
+        const discountInput = document.getElementById('discountInput');
         const discount = parseFloat(discountInput.value);
         
         if (isNaN(discount) || discount < 0) {
